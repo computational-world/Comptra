@@ -1,0 +1,103 @@
+2/24/19
+	Features:
+		- Changed damage system.  Enemies colliding with the player no longer get destroyed, but hit the player instead.
+			When the player is hit, he is immune to damage for 1.5 seconds.
+		- Added indicator when damaged
+	
+	Bug Fixes:
+		- Fixed a bug that caused the hero to take damage from colliding with an enemy during the death animation
+		
+2/23/19
+	Features:
+		- Added Boss 1
+		- Added exit power-up (finish level)
+		
+2/22/19
+	Features:
+		- Added death animation for monsters	
+		
+	Bug Fixes:
+		- fixed ghost border around certain animations
+
+2/21/19
+	Features:
+		- Added the following sounds: bullet hit, player hit, enemy destroyed, health, shield	
+		
+2/19/19
+	Features:
+		- Added ability to lock camera (for boss fight)
+
+2/18/19
+	Features:
+		- Added the rest of level 1
+		
+2/11/19
+	Features: 
+		- Added waterfall constructor
+
+2/9/19
+	Features:
+		- Added hero ability to shoot at up and down angles
+		- Added cooldown to shooting
+		- Added Mech monster (jump/shoot/stand)
+		- Added weapons to UI
+		
+2/8/19
+	Features:
+		- Added map boundary for hero and camera
+		- Added enemy shooting capability
+		
+	Bug Fixes:
+		- Fixed a bug with UI moving when at the edge of the map
+		
+2/7/19
+	Features:
+		- Added black border around bullet to make it more visible
+		- Added Turret monster (immobile/shoot)
+		- Added empty heart to UI to better illustrate current health vs max health
+		- Added explosion effect when bullet collides with enemies
+		- Added hero aiming up while standing, running right, and running left
+		- Added hero aiming down while standing, running right, and running left
+		
+	Bug Fixes:
+		- Fixed a bug that caused the hero to continually jump instead of falling after jump completes
+		- Fixed a bug that caused the hero to be unable to jump and move simultaneously
+		- Fixed a bug that caused the hero to jump twice if changing direction mid-air
+		- Fixed a bug that was causing flickering on timed shooting animation of turret
+		
+2/6/19
+	Features:
+		- Changed hero to a new sprite with more animations/states
+		- Added shield animation
+		- Added flying robot monster (basic movement)
+
+2/5/19
+	Features:
+		- Added power-up functionality and floating animation.  
+		- Added health power-up
+		- Added coin power-up
+		- Added shield power-up
+		- Added ability for monsters to drop power-ups
+		- Added smart platform constructor
+		- Added tile constructor for various background objects (rocks, trees, etc.)
+		- Added coin counter to UI
+		
+	Bug Fixes:
+		- Fixed a bug that created a gap between tiles.
+
+2/2/19
+	Bug Fixes:
+		- Fixed bug that allowed bullets removed from the game to still hit enemies if they walked into the spot where the bullet was removed.
+		
+1/31/19:
+	Features:
+		- Added ability to shoot
+		- Added basic monster with health
+		- Added working UI (health, score, level)
+		- Added ability to remove entity from game
+	Bug Fixes:
+		- Fixed bullet/monster collision detection
+		- Fixed ghost frame bug while running on platform (this also reduces the total number of platforms needed in the game)
+		- Fixed inability to jump more than once
+		
+Change Log started 1/31/19.
