@@ -158,6 +158,7 @@ AM.queueDownload("./img/dust.png");
 AM.queueDownload("./img/shields.png");
 AM.queueDownload("./img/explosion.png");
 AM.queueDownload("./img/effects.png");
+AM.queueDownload("./img/grenadeBoom.png");
 // powerups
 AM.queueDownload("./img/PowerUp/health.png");
 AM.queueDownload("./img/PowerUp/coin.png");
@@ -467,6 +468,22 @@ function startInput() {
             case 90:
                 gameEngine.Hero.special = false;
                 break;
+				
+			// D
+            /*case 68:
+
+				if (gameEngine.Hero.specials.length > 0) {
+					if (gameEngine.Hero.specialsIndex + 2 > gameEngine.Hero.specials.length) {
+						gameEngine.Hero.currentSpecial = gameEngine.Hero.specials[0];
+						gameEngine.Hero.specialsIndex = 0;
+					}
+					else {
+						gameEngine.Hero.currentSpecial = gameEngine.Hero.specials[gameEngine.Hero.specialsIndex+1];
+						gameEngine.Hero.specialsIndex++;
+					}
+				}
+                break;
+				*/
 		}
 	});
 }

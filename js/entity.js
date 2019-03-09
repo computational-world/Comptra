@@ -269,6 +269,7 @@ Platform.prototype.update = function () {
     Entity.prototype.update.call(this);
 }
 
+
 /*
 PowerUp
 */
@@ -343,10 +344,26 @@ PowerUp.prototype.update = function () {
 	else if (this.type === "grenade") {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					this.game.Hero.specials.push("grenade");
+					
+					// no specials
+					if (this.game.Hero.specials.length === 0) {
+						this.game.Hero.specials.push("grenade");
+						this.game.Hero.grenades++; 
+					} 
+					// increment grenades
+					else {
+						for (var i = 0; i < this.game.Hero.specials.length; i ++) {
+							if (this.game.Hero.specials[i] === "grenade") {
+								this.game.Hero.grenades++; 
+								break;
+							}
+						}
+					}
+				
 					this.removeFromWorld = true;
+					
 		}
-	}
+	}	
 	else if (this.type === "exit") {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");			
@@ -1003,6 +1020,7 @@ function Soldier(game, spritesheet, x, y) {
 	this.jump = false;
 	this.shoot = false;
 	this.shootElapsedTime = 5;
+	this.specialElapsedTime = 5;
 	this.hit = false;
 	this.hitElapsedTime = 5;
 	this.special = false;
@@ -1013,9 +1031,10 @@ function Soldier(game, spritesheet, x, y) {
 	this.health = this.maxHealth;
 	this.coins = 0;
     this.platform = game.platforms[0];
+	this.specialsIndex = 0;
+	this.grenades = 0;
 	this.specials = [];
-//	this.specials.push("grenade");
-	this.currentSpecial = this.specials[0];
+	this.currentSpecial = "";
 	this.lives = 3;
 	this.weapon = "basic";
 	this.soundDamage = new Sound("audio/damage.wav");
@@ -1041,6 +1060,7 @@ Soldier.prototype.reset = function() {
 	this.jump = false;
 	this.shoot = false;
 	this.shootElapsedTime = 5;
+	this.specialElapsedTime = 5;
 	this.hit = false;
 	this.hitElapsedTime = 5;
 	this.special = false;
@@ -1051,7 +1071,8 @@ Soldier.prototype.reset = function() {
 	this.health = this.maxHealth;
 	this.lives = 3;
 	this.coins = 0;
-	this.currentSpecial = this.specials[0];
+	this.grenades = 0;
+	this.currentSpecial = "";
 
 }
 
@@ -1060,19 +1081,25 @@ Soldier.prototype.update = function () {
 	this.hitElapsedTime += this.game.clockTick;
 	this.lastboundingbox = this.boundingbox;
 	
+	if (this.specials.length > 0) this.currentSpecial = this.specials[this.specialsIndex];
+	else this.currentSpecial = "";
 	
-	// if (this.health <= 0) {
-		// this.game.gameOver = true;
-		// this.removeFromWorld = true;
-		// soundSong.stop();
-	// }
 	
+	 if (this.health <= 0) {
+		 this.game.gameOver = true;
+		 this.removeFromWorld = true;
+		 soundSong.stop();
+	 }
+	 
+	
+	/*
 	if (this.health <= 0) {
 		
 		this.lives--;
 		this.health = this.maxHealth;
 		if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
 	}
+	*/
 	
 	if (this.lives <= 0) {
 		this.game.gameOver = true;
@@ -1160,40 +1187,38 @@ Soldier.prototype.update = function () {
 		} 
         
     }
-	
+
 	// use special
 	if (this.special) {
-		if (this.specials.length > 0) {
-			if (this.currentSpecial === "grenade") {
-				// 0.35 second cooldown
-				if (this.shootElapsedTime > 0.35) {
-					var compensate = 37;
-					var compensateY = 12;
-					//var dir = 1;
-					var aimY;
-					if (this.direction === -1) {
-						//dir = -1;
-						compensate = -7;
-					}
-					if (this.up) {
-						aimY = 1;
-						compensateY -= 13;
-					}
-					else if (this.down) {
-						aimY = -1;
-						compensateY += 13;
-					}
-					else aimY = 0;
-					
-					var grenade = new Grenade(this.game, AM.getAsset("./img/powerUp/grenade.png"), this.x + compensate, this.y + compensateY, this.direction, aimY);
-					this.game.addEntity(grenade);
-//					this.game.bullets.push(grenade);
-					this.soundShoot.play();
-					this.shootElapsedTime = 0; 
-				} 
-			}
 
-			this.specials.splice(this.currentSpecial, 1);
+		// cooldown
+		if (this.specials.length > 0 && this.specialElapsedTime > 0.35) {
+
+			// grenade
+			if (this.currentSpecial === "grenade") {
+				
+				// has grenades
+				if (this.grenades > 0) {
+					console.log("grenade!");
+					this.grenades--;
+					var grenade = new Grenade(this.game, AM.getAsset("./img/PowerUp/grenade.png"), this.x + 15, this.y , this.direction, aimY);
+					this.game.addEntity(grenade);
+				
+					// no more grenades
+					if (this.grenades === 0 ) {
+						this.currentSpecial = "";
+						this.specials.splice(this.currentSpecial, 1);
+					}
+
+					// reset cooldown
+					this.specialElapsedTime = 0;
+				}
+			}
+			
+			// airstrike
+			
+
+			//this.specials.splice(this.currentSpecial, 1);
 
 		}
 		
@@ -1274,9 +1299,14 @@ Soldier.prototype.update = function () {
 
     // Fall off screen
     if (this.y > 700) {
-		this.health = 0;
+		
+		this.lives--;
+		this.health = this.maxHealth;
+		if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
+		
+		//this.health = 0;
 		// this.game.shop = true;
-		this.y = -50;
+		//this.y = -50;
 	}
     Entity.prototype.update.call(this);
 }
@@ -1387,7 +1417,7 @@ Soldier.prototype.drawUI = function () {
 	this.ctx.font = "bold 30px Arial";
 	
 	// Level
-	this.ctx.fillText("Level " + this.game.level, 350, 30);
+	this.ctx.fillText("Level: 1", 350, 30);
 	
 	// Score
 	if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
@@ -1399,17 +1429,16 @@ Soldier.prototype.drawUI = function () {
 	    if (i < this.health) this.ctx.drawImage(AM.getAsset("./img/heart.png"), 50 + (i * 35), 10, 35, 35);
 	    else this.ctx.drawImage(AM.getAsset("./img/heartEmpty.png"), 50 + (i * 35), 10, 35, 35);
 	}
+	
+	// Lives
+	this.ctx.font = "bold 15px Arial";
+	this.ctx.fillText("x"+this.lives, 40, 50);
+	this.ctx.font = "bold 30px Arial";
 
 	// Shield
 	for (var i = 0; i < this.shield; i++) this.ctx.drawImage(AM.getAsset("./img/PowerUp/shield.png"), 50 + (this.maxHealth * 35) + (i * 35), 10, 35, 35);
 	
-	// Weapons
-	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 145, 0, 148, 106, 0, 50, 79, 53);
-	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 0, 0, 148, 106, 80, 50, 79, 53);
-	if (this.weapon === "basic") this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
-	if (this.specials.length > 0) {
-		this.ctx.drawImage(AM.getAsset("./img/PowerUp/grenade.png"), 0, 0, 512, 512, 105, 61, 30, 30);
-	}
+
 	// context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
 	
 	// Coins
@@ -1418,8 +1447,22 @@ Soldier.prototype.drawUI = function () {
 		this.ctx.drawImage(AM.getAsset("./img/PowerUp/coinIcon.png"), 740 - (Math.log10(this.coins) + 1) * 10, 40, 35, 35);
 		this.ctx.fillText(this.coins, 785 - (Math.log10(this.coins) + 1) * 10, 70);	
 	}
-		
+
+	// Weapons
+	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 145, 0, 148, 106, 0, 50, 79, 53);
+	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 0, 0, 148, 106, 80, 50, 79, 53);
+	if (this.weapon === "basic") this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+	if (this.specials.length > 0) {
+		// grenades
+		if (this.currentSpecial === "grenade") {
+			this.ctx.drawImage(AM.getAsset("./img/PowerUp/grenade.png"), 0, 0, 512, 512, 105, 61, 30, 30);
+			this.ctx.font = "bold 15px Arial";
+			this.ctx.fillText(this.grenades, 135, 90);
+			this.ctx.font = "bold 30px Arial";
+		}
+	}	
 }
+
 
 /*
 Bullet
@@ -1503,20 +1546,27 @@ Bullet.prototype.draw = function () {
 Grenade
 */
 function Grenade(game, spritesheet, x, y, direction, aimY) {
-    this.animation = new Animation(spritesheet, 512, 512, 8, 1, 8, true, 0.25);
-    this.animationExplosion = new CustomAnimation(AM.getAsset("./img/explosions.png"), 641, 79, 5, 15, 15, 6, .05, 6, false, 1);
-    this.speed = 500;
+    this.animation = new Animation(spritesheet, 512, 512, 1, 0.6, 1, false, 0.05);
+	this.animationFall = new Animation(spritesheet, 512, 512, 1, 1, 1, true, 0.05);
+	this.animationExplosion = new Animation(AM.getAsset("./img/grenadeBoom.png"), 96, 96, 5, 0.06, 14, false, 1);
+    //this.animationExplosion = new CustomAnimation(AM.getAsset("./img/grenadeBoom.png"), 641, 79, 5, 15, 15, 6, .05, 6, false, 1);
+    this.speed = 450;
     this.ctx = game.ctx;
 	this.game = game;
     this.x = x;
     this.y = y;
-	this.width = 512;
-	this.height = 512;
+	this.width = 512 * 0.05;
+	this.height = 512 * 0.05;
 	this.startX = x;
 	this.direction = direction;
+	this.jumpHeight = 150;
 	this.aimY = aimY;
+	this.basey = y;
 	this.hit = false;
+	this.exploding = false;
 	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+	this.explosionboundingbox = new BoundingBox(this.x, -500, this.width, this.height);
+	this.sound = new Sound("audio/grenade.wav");
     Entity.call(this, game, this.x, this.y);
 }
 
@@ -1524,44 +1574,95 @@ Grenade.prototype = new Entity();
 Grenade.prototype.constructor = Grenade;
 
 Grenade.prototype.update = function () {
+	
+	// in air
 	if (!this.hit) {
 		this.x += this.game.clockTick * this.speed * this.direction;
-		this.y -= this.game.clockTick * this.speed * this.aimY/2;
-		this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
 		
-		var distance = Math.abs(this.x - this.startX);
-		if (distance > 400) {
-			if (DEBUG) console.log("Bullet removed.");	
-			for( var i = 0; i < this.game.bullets.length; i++){ 
-				if ( this.game.bullets[i] === this) {
-					this.game.bullets.splice(i, 1); 
-					this.removeFromWorld = true;
+		if (!this.animation.isDone()) {
+			var duration;
+
+			duration = this.animation.elapsedTime + this.game.clockTick;
+			if (duration > this.animation.totalTime / 2) duration = this.animation.totalTime - duration;
+			duration = duration / this.animation.totalTime;
+
+			// parbolic jump
+			height = (4 * duration - 4 * duration * duration) * this.jumpHeight;
+			this.y = this.basey - height;	
+		}
+		else this.y += this.game.clockTick / this.animation.totalTime * 4 * this.jumpHeight;
+		
+		this.lastBottom = this.boundingbox.bottom;
+        this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+		
+		// check for platform
+        for (var i = 0; i < this.game.platforms.length; i++) {
+            var pf = this.game.platforms[i];
+            
+            // landed on top of platform            
+            if (this.boundingbox.collide(pf.boundingbox) && this.lastBottom < pf.boundingbox.top) {
+                if (DEBUG) console.log("Grenade landed on a platform!");
+                this.y = pf.boundingbox.top - this.height;
+				this.hit = true;
+				this.exploding = true;
+				this.sound.play();
+				break;
+            }
+        }
+	} 
+	
+	// exploding
+	else {
+		this.explosionboundingbox = new BoundingBox(this.x-25, this.y-70, 96, 96);
+		
+		if (this.exploding) {
+			// check for monster collision
+			for( var i = 0; i < this.game.monsters.length; i++){
+			
+				var monster = this.game.monsters[i];
+				if ( this.explosionboundingbox.collide(monster.boundingbox)) {
+					monster.hitPoints -= 5;
+					this.exploding = false;
 				}
 			}
 		}
+		
+		if (this.animationExplosion.elapsedTime + this.game.clockTick > this.animationExplosion.totalTime) this.removeFromWorld = true;
+		
+	}
+	
+	
+    // Fall off screen
+    if (this.y > 700) {
+		this.removeFromWorld = true;
     }
 	
     Entity.prototype.update.call(this);
 }
 
 Grenade.prototype.draw = function () {
-	if (this.hit) {
-		this.animationExplosion.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
-		if (this.animationExplosion.isDone()) {
-			for( var i = 0; i < this.game.bullets.length; i++){ 
-				if ( this.game.bullets[i] === this) {
-					this.game.bullets.splice(i, 1);
-					this.removeFromWorld = true;
-				}
-			}	
-		}
-		
-	}
-    else this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
 	
+	if (this.hit) {
+		this.animationExplosion.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x - 25, this.y-70);
 
+	}
+    else {
+		if (!this.animation.isDone()) this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+		else this.animationFall.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	}
+	
+	// bounding box
+	if (DEBUG) {
+		this.ctx.strokeStyle = "red";
+		this.ctx.strokeRect(this.x - Camera.x, this.y, this.width, this.height);
+		this.ctx.strokeRect(this.explosionboundingbox.left - Camera.x, this.explosionboundingbox.top, this.explosionboundingbox.width, this.explosionboundingbox.height);
+		this.ctx.strokeStyle = "green";
+		this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
+	}
+	
     Entity.prototype.draw.call(this);
 }
+
 
 
 /*
