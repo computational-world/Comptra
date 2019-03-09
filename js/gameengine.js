@@ -235,9 +235,11 @@ GameEngine.prototype.addMonsters = function(monster) {
 
 /** Load level 1*/
 GameEngine.prototype.loadLevelOne = function() {
-	gameEngine.addEntity(gameEngine.Hero);
+	gameEngine.createLevelOneMap();
+	
 	// Monsters
 	gameEngine.createLevelOneMonsters();
+	gameEngine.addEntity(gameEngine.Hero);
 	soundSong.play();
 }
 

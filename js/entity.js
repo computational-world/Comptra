@@ -355,6 +355,7 @@ PowerUp.prototype.update = function () {
 					this.game.level++;
 					this.game.Hero.removeFromWorld = true;
 					this.game.shop = true;
+					resetGame();
 					// this.game.endLevel = true;
 		}
 	}
