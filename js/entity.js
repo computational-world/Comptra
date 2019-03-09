@@ -274,7 +274,7 @@ Platform.prototype.update = function () {
 PowerUp
 */
 function PowerUp(game, spritesheet, x, y, width, height, scale, type) {
-	if (type === "shield" || type === "grenade") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
+	if (type === "shield" || type === "grenade" || type === "airstrike") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
 	else if (type === "exit") this.animation = new Animation(spritesheet, width, height, 8, 0.03, 32, true, scale);
 	else this.animation = new Animation(spritesheet, width, height, 8, 0.08, 8, true, scale);
     this.ctx = game.ctx;
@@ -356,6 +356,35 @@ PowerUp.prototype.update = function () {
 							if (this.game.Hero.specials[i] === "grenade") {
 								this.game.Hero.grenades++; 
 								break;
+							}
+							if (i === this.game.Hero.specials.length-1) {
+								this.game.Hero.specials.push("grenade");
+							}
+						}
+					}
+				
+					this.removeFromWorld = true;
+					
+		}
+	}	
+	else if (this.type === "airstrike") {
+		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
+					if (DEBUG) console.log("Hero got " + this.type + " power up!");
+					
+					// no specials
+					if (this.game.Hero.specials.length === 0) {
+						this.game.Hero.specials.push("airstrike");
+						this.game.Hero.airstrikes++; 
+					} 
+					// increment airstrikes
+					else {
+						for (var i = 0; i < this.game.Hero.specials.length; i ++) {
+							if (this.game.Hero.specials[i] === "airstrike") {
+								this.game.Hero.airstrikes++; 
+								break;
+							}
+							if (i === this.game.Hero.specials.length-1) {
+								this.game.Hero.specials.push("airstrike");
 							}
 						}
 					}
@@ -450,7 +479,7 @@ FlyingRobot.prototype.update = function () {
 				// hit by bullet            
 				if (!bullet.hit && this.boundingbox.collide(bullet.boundingbox)) {
 					if (DEBUG) console.log("hit!");
-					this.hitPoints -= 1;
+					this.hitPoints -= this.game.Hero.weaponDamage;
 					bullet.hit = true;
 				}
 			}
@@ -546,7 +575,7 @@ Turret.prototype.update = function () {
 				if (!bullet.hit && this.boundingbox.collide(bullet.boundingbox)) {
 					if (DEBUG) console.log("hit!");
 					bullet.hit = true;
-					this.hitPoints -= 1;
+					this.hitPoints -= this.game.Hero.weaponDamage;
 				}
 			}
 
@@ -684,7 +713,7 @@ Mech.prototype.update = function () {
 				if (!bullet.hit && this.boundingbox.collide(bullet.boundingbox)) {
 					if (DEBUG) console.log("hit!");
 					bullet.hit = true;
-					this.hitPoints -= 1;
+					this.hitPoints -= this.game.Hero.weaponDamage;
 				}
 			}
 
@@ -847,7 +876,7 @@ Boss1.prototype.update = function () {
 				if (!bullet.hit && this.boundingbox.collide(bullet.boundingbox)) {
 					if (DEBUG) console.log("hit!");
 					bullet.hit = true;
-					this.hitPoints -= 1;
+					this.hitPoints -= this.game.Hero.weaponDamage;
 				}
 			}
 	
@@ -982,9 +1011,6 @@ Boss1.prototype.draw = function () {
 }
 
 
-
-
-
 /*
 Running Soldier
 */
@@ -1033,10 +1059,16 @@ function Soldier(game, spritesheet, x, y) {
     this.platform = game.platforms[0];
 	this.specialsIndex = 0;
 	this.grenades = 0;
+	this.airstrikes = 0;
 	this.specials = [];
 	this.currentSpecial = "";
 	this.lives = 3;
+	this.weapons = [];
+	this.weapons.push("basic");
+	this.weapons.push("three-way");
+	this.weaponsIndex = 0;
 	this.weapon = "basic";
+	this.weaponDamage = 1;
 	this.soundDamage = new Sound("audio/damage.wav");
 	this.soundJump = new Sound("audio/jump.wav");
     this.boundingbox = new BoundingBox(this.x+2, this.y+2, this.width-7, this.height);
@@ -1078,11 +1110,13 @@ Soldier.prototype.reset = function() {
 
 Soldier.prototype.update = function () {
 	this.shootElapsedTime += this.game.clockTick;
+	this.specialElapsedTime += this.game.clockTick;
 	this.hitElapsedTime += this.game.clockTick;
 	this.lastboundingbox = this.boundingbox;
 	
 	if (this.specials.length > 0) this.currentSpecial = this.specials[this.specialsIndex];
 	else this.currentSpecial = "";
+	if (this.specialsIndex < 0) this.specialsIndex = 0;
 	
 	
 	 if (this.health <= 0) {
@@ -1183,6 +1217,16 @@ Soldier.prototype.update = function () {
 			var bullet = new Bullet(this.game, AM.getAsset("./img/bullet.png"), this.x + compensate, this.y + compensateY, this.direction, aimY);
 			this.game.addEntity(bullet);
 			this.game.bullets.push(bullet);
+			
+			if (this.weapon === "three-way") {
+				var bullet = new Bullet(this.game, AM.getAsset("./img/bullet.png"), this.x + compensate, this.y + compensateY, this.direction, -1);
+				this.game.addEntity(bullet);
+				this.game.bullets.push(bullet);
+				
+				var bullet = new Bullet(this.game, AM.getAsset("./img/bullet.png"), this.x + compensate, this.y + compensateY, this.direction, 1);
+				this.game.addEntity(bullet);
+				this.game.bullets.push(bullet);
+			}
 			this.shootElapsedTime = 0; 
 		} 
         
@@ -1192,8 +1236,8 @@ Soldier.prototype.update = function () {
 	if (this.special) {
 
 		// cooldown
-		if (this.specials.length > 0 && this.specialElapsedTime > 0.35) {
-
+		if (this.specials.length > 0 && this.specialElapsedTime > 0.75) {
+					
 			// grenade
 			if (this.currentSpecial === "grenade") {
 				
@@ -1206,8 +1250,10 @@ Soldier.prototype.update = function () {
 				
 					// no more grenades
 					if (this.grenades === 0 ) {
-						this.currentSpecial = "";
-						this.specials.splice(this.currentSpecial, 1);
+						
+						this.currentSpecial = this.specials[this.specialsIndex-1];
+						this.specials.splice(this.specialsIndex, 1);
+						if (this.specialsIndex === this.specials.length) this.specialsIndex -= 1;
 					}
 
 					// reset cooldown
@@ -1216,8 +1262,29 @@ Soldier.prototype.update = function () {
 			}
 			
 			// airstrike
-			
+			else if (this.currentSpecial === "airstrike") {
+				
+				// has airstrikes
+				if (this.airstrikes > 0) {
+					console.log("airstrike!");
+					this.airstrikes--;
+					var jet = new Jet(this.game, AM.getAsset("./img/PowerUp/jet.png"), Camera.x - 100, 100);
+					this.game.addEntity(jet);
+				
+					// no more airstrikes
+					if (this.airstrikes === 0 ) {
+						
+						this.currentSpecial = this.specials[this.specialsIndex-1];
+						this.specials.splice(this.specialsIndex, 1);
+						if (this.specialsIndex === this.specials.length) this.specialsIndex -= 1;
+					}
 
+					// reset cooldown
+					this.specialElapsedTime = 0;
+				}
+			}
+
+			console.log("index: " + this.specialsIndex);
 			//this.specials.splice(this.currentSpecial, 1);
 
 		}
@@ -1452,12 +1519,31 @@ Soldier.prototype.drawUI = function () {
 	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 145, 0, 148, 106, 0, 50, 79, 53);
 	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 0, 0, 148, 106, 80, 50, 79, 53);
 	if (this.weapon === "basic") this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+	else if (this.weapon === "double") this.ctx.drawImage(AM.getAsset("./img/bullet2.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+	
+	else if (this.weapon === "three-way") {
+		if (this.weaponDamage === 1) this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+		else this.ctx.drawImage(AM.getAsset("./img/bullet2.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+		
+		this.ctx.font = "bold 15px Arial";
+		this.ctx.fillText("x"+this.lives, 52, 92);
+		this.ctx.font = "bold 30px Arial";
+	}
+	
 	if (this.specials.length > 0) {
 		// grenades
 		if (this.currentSpecial === "grenade") {
 			this.ctx.drawImage(AM.getAsset("./img/PowerUp/grenade.png"), 0, 0, 512, 512, 105, 61, 30, 30);
 			this.ctx.font = "bold 15px Arial";
-			this.ctx.fillText(this.grenades, 135, 90);
+			this.ctx.fillText(this.grenades, 137, 92);
+			this.ctx.font = "bold 30px Arial";
+		}
+		
+		// air strikes
+		else if (this.currentSpecial === "airstrike") {
+			this.ctx.drawImage(AM.getAsset("./img/PowerUp/jet.png"), 0, 0, 825, 333, 95, 65, 50, 20);
+			this.ctx.font = "bold 15px Arial";
+			this.ctx.fillText(this.airstrikes, 137, 92);
 			this.ctx.font = "bold 30px Arial";
 		}
 	}	
@@ -1469,6 +1555,7 @@ Bullet
 */
 function Bullet(game, spritesheet, x, y, direction, aimY) {
     this.animation = new Animation(spritesheet, 14, 14, 8, 1, 8, true, 1);
+	this.animation2 = new Animation(AM.getAsset("./img/bullet2.png"), 14, 14, 8, 1, 8, true, 1);
     this.animationExplosion = new CustomAnimation(AM.getAsset("./img/explosions.png"), 641, 79, 5, 15, 15, 6, .05, 6, false, 1);
     this.speed = 500;
     this.ctx = game.ctx;
@@ -1528,7 +1615,10 @@ Bullet.prototype.draw = function () {
 		}
 		
 	}
-    else this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+    else {
+		if (this.game.Hero.weaponDamage === 1) this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+		else this.animation2.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	}
 	
 	/*
 	ctx.save();
@@ -1663,6 +1753,149 @@ Grenade.prototype.draw = function () {
     Entity.prototype.draw.call(this);
 }
 
+
+/*
+Jet
+*/
+function Jet(game, spritesheet, x, y) {
+    this.animation = new Animation(spritesheet, 825, 333, 1, 1, 1, true, .15);
+    this.speed = 600;
+    this.ctx = game.ctx;
+	this.game = game;
+    this.x = x;
+    this.y = y;
+	this.elapsedTime = 0;
+	this.baseX = x;
+
+    Entity.call(this, game, this.x, this.y);
+}
+
+Jet.prototype = new Entity();
+Jet.prototype.constructor = Jet;
+
+Jet.prototype.update = function () {
+	this.elapsedTime += this.game.clockTick;
+	
+	// drop bombs in intervals
+	if (this.x < this.baseX+800) {
+		if (this.elapsedTime > 0.25) {
+			var bomb = new JetBomb(this.game, AM.getAsset("./img/PowerUp/missile.png"), this.x + 20, this.y);
+			this.game.addEntity(bomb);
+			this.elapsedTime = 0;
+		}
+	}
+	
+	
+	this.x += this.game.clockTick * this.speed;
+	if (this.x > Camera.x + 800) this.removeFromWorld = true;
+	
+    Entity.prototype.update.call(this);
+}
+
+Jet.prototype.draw = function () {
+	
+	this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	
+    Entity.prototype.draw.call(this);
+}
+
+
+/*
+Jet Bomb
+*/
+function JetBomb(game, spritesheet, x, y) {
+	// (spriteSheet, startX, startY, offset, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale)
+	this.animation = new Animation(spritesheet, 148, 125, 1, 0.6, 1, true, 0.6);
+    //this.animation = new CustomAnimation(spritesheet, 13, 48, 4, 32, 62, 13, 0.05, 13, true, 1);
+	this.animationExplosion = new Animation(AM.getAsset("./img/grenadeBoom.png"), 96, 96, 5, 0.06, 14, false, 1);
+    this.speed = 400;
+    this.ctx = game.ctx;
+	this.game = game;
+    this.x = x;
+    this.y = y;
+	this.width = 20;
+	this.height = 125*.6;
+	this.hit = false;
+	this.exploding = false;
+	this.boundingbox = new BoundingBox(this.x+36, this.y, this.width, this.height);
+	this.explosionboundingbox = new BoundingBox(this.x, -500, this.width, this.height);
+	this.sound = new Sound("audio/grenade.wav");
+    Entity.call(this, game, this.x, this.y);
+}
+
+JetBomb.prototype = new Entity();
+JetBomb.prototype.constructor = JetBomb;
+
+JetBomb.prototype.update = function () {
+	
+	// in air
+	if (!this.hit) {
+		this.y += this.game.clockTick * this.speed;
+		
+		this.lastBottom = this.boundingbox.bottom;
+        this.boundingbox = new BoundingBox(this.x+36, this.y, this.width, this.height);
+		
+		// check for platform
+        for (var i = 0; i < this.game.platforms.length; i++) {
+            var pf = this.game.platforms[i];
+            
+            // landed on top of platform            
+            if (this.boundingbox.collide(pf.boundingbox) && this.lastBottom < pf.boundingbox.top) {
+                if (DEBUG) console.log("Bomb landed on a platform!");
+                this.y = pf.boundingbox.top - this.height;
+				this.hit = true;
+				this.exploding = true;
+				this.sound.play();
+				break;
+            }
+        }
+	} 
+	
+	// exploding
+	else {
+		this.explosionboundingbox = new BoundingBox(this.x, this.y-21, 96, 96);
+		
+		if (this.exploding) {
+			// check for monster collision
+			for( var i = 0; i < this.game.monsters.length; i++){
+			
+				var monster = this.game.monsters[i];
+				if ( this.explosionboundingbox.collide(monster.boundingbox)) {
+					monster.hitPoints -= 5;
+					this.exploding = false;
+				}
+			}
+		}
+		
+		if (this.animationExplosion.elapsedTime + this.game.clockTick > this.animationExplosion.totalTime) this.removeFromWorld = true;
+		
+	}
+	
+	
+    // Fall off screen
+    if (this.y > 700) {
+		this.removeFromWorld = true;
+    }
+	
+    Entity.prototype.update.call(this);
+}
+
+JetBomb.prototype.draw = function () {
+	
+	if (this.hit) this.animationExplosion.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y-21);
+    else this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	
+	// bounding box
+	if (DEBUG) {
+		this.ctx.strokeStyle = "red";
+		this.ctx.strokeRect(this.x - Camera.x, this.y, this.width, this.height);
+		this.ctx.strokeRect(this.explosionboundingbox.left - Camera.x, this.explosionboundingbox.top, this.explosionboundingbox.width, this.explosionboundingbox.height);
+		this.ctx.strokeStyle = "green";
+		this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
+	}
+	
+    Entity.prototype.draw.call(this);
+}
 
 
 /*

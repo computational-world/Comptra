@@ -147,6 +147,7 @@ AM.queueDownload("./img/hero2.png");
 AM.queueDownload("./img/layer1.png");
 AM.queueDownload("./img/layer2.png");
 AM.queueDownload("./img/bullet.png");
+AM.queueDownload("./img/bullet2.png");
 AM.queueDownload("./img/explosions.png");
 AM.queueDownload("./img/robots.png");
 AM.queueDownload("./img/mechs.png");
@@ -159,6 +160,8 @@ AM.queueDownload("./img/shields.png");
 AM.queueDownload("./img/explosion.png");
 AM.queueDownload("./img/effects.png");
 AM.queueDownload("./img/grenadeBoom.png");
+AM.queueDownload("./img/pointer.png");
+
 // powerups
 AM.queueDownload("./img/PowerUp/health.png");
 AM.queueDownload("./img/PowerUp/coin.png");
@@ -166,8 +169,9 @@ AM.queueDownload("./img/PowerUp/coinIcon.png");
 AM.queueDownload("./img/PowerUp/shield.png");
 AM.queueDownload("./img/PowerUp/grenade.png");
 AM.queueDownload("./img/PowerUp/exit.png");
+AM.queueDownload("./img/PowerUp/jet.png");
+AM.queueDownload("./img/PowerUp/missile.png");
 
-AM.queueDownload("./img/pointer.png");
 
 AM.downloadAll(function () {
     var canvas = document.getElementById("gameWorld");
@@ -470,8 +474,7 @@ function startInput() {
                 break;
 				
 			// D
-            /*case 68:
-
+            case 68:
 				if (gameEngine.Hero.specials.length > 0) {
 					if (gameEngine.Hero.specialsIndex + 2 > gameEngine.Hero.specials.length) {
 						gameEngine.Hero.currentSpecial = gameEngine.Hero.specials[0];
@@ -483,7 +486,20 @@ function startInput() {
 					}
 				}
                 break;
-				*/
+				
+			// S
+            case 83:
+				if (gameEngine.Hero.weaponsIndex + 2 > gameEngine.Hero.weapons.length) {
+					gameEngine.Hero.weapon = gameEngine.Hero.weapons[0];
+					gameEngine.Hero.weaponsIndex = 0;
+				}
+				else {
+					gameEngine.Hero.weapon = gameEngine.Hero.weapons[gameEngine.Hero.weaponsIndex+1];
+					gameEngine.Hero.weaponsIndex++;
+				}
+				
+                break;
+				
 		}
 	});
 }

@@ -170,12 +170,15 @@ GameMenu.prototype.draw = function() {
 		roundRect(this.ctx, 220, 200, 350, 250, 5, true, true);
 		this.ctx.fillStyle = "#0a0a0a";
 		this.ctx.font = "15px Verdana";
-		this.ctx.fillText("Left Arrow: Move Left", 290, 230);
-		this.ctx.fillText("Right Arrow: Move Right", 290, 260);
-		this.ctx.fillText("Up Arrow: Aim Gun Upward", 290, 290);
-		this.ctx.fillText("Down Arrow: Aim Gun Downward", 290, 320);
-		this.ctx.fillText("X: Jump", 290, 350);
-		this.ctx.fillText("C: Shoot", 290, 380);
+		this.ctx.fillText("Left Arrow + Right Arrow: Move", 290, 230);
+		this.ctx.fillText("Up Arrow: Aim Gun Upward", 290, 260);
+		this.ctx.fillText("Down Arrow: Aim Gun Downward", 290, 290);
+		this.ctx.fillText("X: Jump", 290, 320);
+		this.ctx.fillText("C: Shoot", 290, 350);
+		this.ctx.fillText("Z: Use Special", 290, 380);
+		// S: swap weapon
+		// D: swap special
+		
 		this.ctx.fillStyle = "#6AE1F5";
 		roundRect(this.ctx, this.game.gobackButton.x, this.game.gobackButton.y, this.game.gobackButton.width, 
 									this.game.gobackButton.height, 5, true, true);
