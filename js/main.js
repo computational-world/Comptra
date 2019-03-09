@@ -226,8 +226,14 @@ AM.downloadAll(function () {
 });
 
 function loadCheckPoint() {
-	var hero = gameEngine.Hero;
+	var hero;
 	for (var i = 0; i < gameEngine.entities.length; i++) {
+		
+		if (gameEngine.entities[i] instanceof Soldier) {
+			hero = gameEngine.entities.splice(i, 1)[0];
+			continue;
+		}
+		
 		if ( gameEngine.entities[i] instanceof Background
 			|| gameEngine.entities[i] instanceof GameMenu
 			|| gameEngine.entities[i] instanceof GameShop) continue;
@@ -235,6 +241,7 @@ function loadCheckPoint() {
 	}
 	
 	if (gameEngine.level === 1) {
+		
 		hero.x = heroCheckPoint.x;
 		hero.y = 0;
 		hero.falling = true;
@@ -243,9 +250,9 @@ function loadCheckPoint() {
 		gameEngine.createLevelOneMap();
 		gameEngine.loadLevelOneCheckPoint();
 		gameEngine.Hero = hero;
-		gameEngine.addEntity(hero);
+		gameEngine.addEntity(gameEngine.Hero);
 	}
-	// alert("Loading CheckPoint");
+	alert("Loading CheckPoint");
 }
 
 
