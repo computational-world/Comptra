@@ -37,6 +37,13 @@ GameShop.prototype.purchaseItem = function() {
 			if (item.type === "Shield" && this.game.Hero.coins >= item.price) {
 				this.game.Hero.shield = 3;
 				this.game.Hero.coins -= item.price;
+			} else if (item.type === "Grenade" && this.game.Hero.coins >= item.price) {
+				if (this.hasSpecial("grenade")) this.game.Hero.grenades++;
+				else {
+					this.game.Hero.specials.push("grenade");
+					this.game.Hero.grenades++;
+				}
+				this.game.Hero.coins -= item.price;
 			} else if (this.game.Hero.coins < item.price) {
 				this.purchaseFail = true;
 			}
@@ -46,6 +53,12 @@ GameShop.prototype.purchaseItem = function() {
 	
 }
 
+GameShop.prototype.hasSpecial = function(type) {
+	for (var i = 0; i < this.game.Hero.specials.length; i++) {
+		if (this.game.Hero.specials[i] === type) return true;
+	}
+	return false;
+}
 
 GameShop.prototype.update = function () {
 	// if (this.purchaseFail) this.purchaseFail = false;
@@ -73,7 +86,7 @@ GameShop.prototype.update = function () {
 
 GameShop.prototype.draw = function () {
 	if (this.game.shop) {
-		
+		// alert("I am here");
 		this.game.ctx.fillStyle = "#0a0a0a";
 		roundRect(this.game.ctx, 0, 0, 800, 800, 5, true, true);
 		this.game.ctx.fillStyle = "#6AE1F5";

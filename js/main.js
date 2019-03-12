@@ -6,6 +6,10 @@ var gameMenu;
 const WINDOW_WIDTH = 800;
 const DEBUG = false;
 
+var check_point_x = {
+	"level1": 4000
+};
+
 var heroCheckPoint = {
 	x: 0,
 	y: 0,
@@ -30,6 +34,7 @@ function Sound(src) {
 
 var soundSong = new Sound("audio/track_1.wav");
 soundSong.sound.volume = 0.5;
+soundSong.sound.loop = true;
 
 function dropPowerUp(entity) {
 	if (entity.powerUpType === "shield") {
@@ -221,7 +226,7 @@ AM.downloadAll(function () {
     gameEngine.start();
 	startInput();
 	
-	gameEngine.createLevelOneMap();
+	// gameEngine.createLevelOneMap();
 	gameEngine.createHero();	
 	gameShop = new GameShop(gameEngine, AM.getAsset("./img/pointer.png"));
 	gameMenu = new GameMenu(gameEngine);
@@ -233,6 +238,7 @@ AM.downloadAll(function () {
 });
 
 function loadCheckPoint() {
+	Camera.lock = false;
 	var hero;
 	for (var i = 0; i < gameEngine.entities.length; i++) {
 		
@@ -265,13 +271,43 @@ function loadCheckPoint() {
 
 
 function startGame() {
+	
 	Camera.lock = false;
 	if (gameEngine.level === 1) {
+
 		gameEngine.loadLevelOne();
 	} else {
-		// console.log(gameEngine.Hero.speed);
-		
-		gameEngine.loadLevelOne();
+		// for (var i = 0; i < gameEngine.monsters.length; i++) {
+			// gameEngine.monsters.splice(i, 1);
+		// }
+		// for (var i = 0; i < gameEngine.platforms.length; i++) {
+			// gameEngine.platforms.splice(i, 1);
+		// }
+
+		// for (var i = 0; i < gameEngine.entities.length; i++) {
+			// var entity = gameEngine.entities[i];
+			// if (entity instanceof Soldier || 
+				// entity instanceof GameMenu ||
+				// entity instanceof GameShop) {
+					// continue;
+			// }
+			// gameEngine.entities.splice(i, 1);
+		// }
+		gameEngine.loadLevelTwo();
+		var hero;
+		var hasHero = false;
+		for (var i = 0; i < gameEngine.entities.length; i++) {
+			var entity = gameEngine.entities[i];
+			if (entity instanceof Soldier) {
+				hero = gameEngine.entities.splice(i, 1)[0];
+				hasHero = true;
+				break;
+			}
+		}
+		if (hasHero) {
+			gameEngine.Hero = hero;
+			gameEngine.addEntity(gameEngine.Hero);
+		} else gameEngine.addEntity(gameEngine.Hero);
 	}
 	
 
@@ -279,26 +315,41 @@ function startGame() {
 
 
 function resetGame() {
-	
-	if (!gameEngine.shop) {
+	// alert(gameEngine.shop + " "  + gameEngine.endLevel + " "  + gameEngine.gameOver);
+	if (!gameEngine.shop && !gameEngine.gameOver && !gameEngine.endLevel) {
 		gameEngine.Hero.reset();
+		// alert("hI");
+		Camera.x = 0;
+	} else if (gameEngine.gameOver) {
+		// alert("in game over");
+		gameEngine.createHero();
+		
+	} else if (gameEngine.endLevel) {
+		// alert("in end level");
+		gameEngine.Hero.x = 200;
+		gameEngine.Hero.y = 0;
+		gameEngine.checkPoint = false;
+		gameEngine.Hero.falling = true;
 		Camera.x = 0;
 	}
+
 	
-	// for (var i = 0; i < gameEngine.monsters.length; i++) {
-		// gameEngine.monsters[i].removeFromWorld = true;
-	// }
-	// for (var i = 0; i < gameEngine.powerups.length; i++) {
-		// gameEngine.powerups[i].removeFromWorld = true;
-	// }
+	for (var i = 0; i < gameEngine.monsters.length; i++) {
+		gameEngine.monsters.splice(i, 1);
+	}
+	for (var i = 0; i < gameEngine.platforms.length; i++) {
+		gameEngine.platforms.splice(i, 1);
+	}
 	
 	for (var i = 0; i < gameEngine.entities.length; i++) {
 		var entity = gameEngine.entities[i];
 		if (entity instanceof Soldier || 
-			entity instanceof Background ||
 			entity instanceof GameMenu ||
-			entity instanceof GameShop) continue;
-		entity.removeFromWorld = true;
+			entity instanceof GameShop) {
+				continue;
+		}
+		// entity.removeFromWorld = true;
+		gameEngine.entities[i].removeFromWorld = true;
 	}
 	
 }
@@ -338,15 +389,18 @@ function startInput() {
 		if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
 			// gameEngine.restartGame = true;
 			gameEngine.startGame = true;
-			gameEngine.gameOver = false;
 			resetGame();
+			gameEngine.gameOver = false;
 			startGame();
 		}
 		
 		if (gameEngine.shop && gameEngine.continueButton.isClick(pos)) {
-			gameEngine.shop = false;
 			gameEngine.checkPoint = false;
+			// gameEngine.Hero.removeFromWorld = false;
+			gameEngine.Hero.visible = true;
 			resetGame();
+			gameEngine.shop = false;
+			gameEngine.endLevel = false;
 			startGame();
 		}
 		

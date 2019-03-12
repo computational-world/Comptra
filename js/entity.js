@@ -58,11 +58,7 @@ Background.prototype.update = function () {
 }
 
 Background.prototype.draw = function () {
-	// if (this.game.endLevel) {
-		// this.game.endLevel = false;
-		// resetGame();
-		// startGame();
-	// }
+
     for (var i = 0; i < this.numberOfRepeats; i++)  
 		this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x + (i*this.animation.frameWidth/2), this.y);
 	
@@ -434,7 +430,7 @@ PowerUp.prototype.update = function () {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 				if (DEBUG) console.log("Hero got " + this.type + " power up!");
 				this.sound1Up.play();
-				this.game.Hero.lives++;
+				if (this.game.Hero.lives < 3) this.game.Hero.lives++;
 				this.removeFromWorld = true;
 		}	
 	}
@@ -512,10 +508,12 @@ PowerUp.prototype.update = function () {
 					this.soundExit.play();
 					this.removeFromWorld = true;
 					this.game.level++;
-					this.game.Hero.removeFromWorld = true;
+					// this.game.Hero.removeFromWorld = true;
+					this.game.Hero.visible = false;
 					this.game.shop = true;
+					this.game.checkPoint = false;
+					this.game.endLevel = true;
 					resetGame();
-					// this.game.endLevel = true;
 		}
 	}
 		
@@ -920,13 +918,13 @@ Mech.prototype.update = function () {
     
     if (this.x - this.game.Hero.x < 405) {
         this.active = true;
-		if (!this.game.checkPoint) {
-			heroCheckPoint.x = this.game.Hero.x;
-			heroCheckPoint.y = this.game.Hero.y;
-			heroCheckPoint.cameraX = Camera.x;
-			// alert("I am here");
-		}
-		this.game.checkPoint = true;
+		// if (!this.game.checkPoint) {
+			// heroCheckPoint.x = this.game.Hero.x;
+			// heroCheckPoint.y = this.game.Hero.y;
+			// heroCheckPoint.cameraX = Camera.x;
+			
+		// }
+		// this.game.checkPoint = true;
 		
 		// saveCheckPoint();
 		// alert("Check Point");
@@ -1305,7 +1303,7 @@ function Soldier(game, spritesheet, x, y) {
 	this.soundDamage = new Sound("audio/damage.wav");
 	this.soundJump = new Sound("audio/jump.wav");
     this.boundingbox = new BoundingBox(this.x+2, this.y+2, this.width-7, this.height);
-	
+	this.visible = true;
     Entity.call(this, game, x, y);
 }
 
@@ -1337,11 +1335,14 @@ Soldier.prototype.reset = function() {
 	this.lives = 3;
 	this.coins = 0;
 	this.grenades = 0;
+	this.visible = true;
 	this.currentSpecial = "";
 
 }
 
 Soldier.prototype.update = function () {
+	if (!this.visible) return;
+	
 	this.shootElapsedTime += this.game.clockTick;
 	this.specialElapsedTime += this.game.clockTick;
 	this.hitElapsedTime += this.game.clockTick;
@@ -1352,24 +1353,37 @@ Soldier.prototype.update = function () {
 	else this.currentSpecial = "";
 	//if (this.specialsIndex < 0) this.specialsIndex = 0;
 	
-	 if (this.health <= 0) {
-		 this.game.gameOver = true;
-		 this.removeFromWorld = true;
-		 soundSong.stop();
-	 }
-	 
+	if (this.game.level === 1 && check_point_x.level1 - this.x < 405) {
+		if (!this.game.checkPoint) {
+			heroCheckPoint.x = this.game.Hero.x;
+			heroCheckPoint.y = this.game.Hero.y;
+			heroCheckPoint.cameraX = Camera.x;
+			
+		}
+		this.game.checkPoint = true;
 	
-	/*
+	}
+	
+	
 	if (this.health <= 0) {
 		
 		this.lives--;
 		this.health = this.maxHealth;
 		if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
+		else {
+			this.x = 200;
+			this.y = 0;
+			Camera.x = 0;
+			Camera.lock = false;
+			this.falling = true;
+			
+		}
 	}
-	*/
+	
 	
 	if (this.lives <= 0) {
 		this.game.gameOver = true;
+		resetGame();
 		this.game.checkPoint = false;
 		this.removeFromWorld = true;
 		soundSong.stop();
@@ -1571,10 +1585,11 @@ Soldier.prototype.update = function () {
         // check for platform
         for (var i = 0; i < this.game.platforms.length; i++) {
             var pf = this.game.platforms[i];
-            
+           
             // landed on top of platform
             if (this.boundingbox.collide(pf.boundingbox) && this.lastboundingbox.bottom < pf.boundingbox.top) {
                 if (DEBUG) console.log("Collision!");
+				// alert("landed");
                 this.falling = false;
                 this.y = pf.boundingbox.top - this.height;
                 this.platform = pf;
@@ -1630,20 +1645,18 @@ Soldier.prototype.update = function () {
 
     // Fall off screen
     if (this.y > 700) {
+
 		
-		this.lives--;
-		this.health = this.maxHealth;
-		if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
-		
-		//this.health = 0;
+		// alert("Hi");
+		this.health = 0;
 		// this.game.shop = true;
-		//this.y = -50;
+		this.y = -50;
 	}
     Entity.prototype.update.call(this);
 }
 
 Soldier.prototype.draw = function () {
-	
+	if (!this.visible) return;
 	// check if hit
 	if (this.hitElapsedTime <= 1.5) {
 		this.animationHit.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x - 11, this.y - 6);
@@ -1745,26 +1758,52 @@ Soldier.prototype.draw = function () {
 
 
 Soldier.prototype.drawUI = function () {
+	if (this.game.level === 1) {
+		
+		this.ctx.font = "bold 30px Arial";
+		
+		// Level
+		this.ctx.fillText("Level: " + this.game.level, 350, 30);
+		
+		// Score
+		if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
+		else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
+		
+		// Lives
+		this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
+		this.ctx.font = "bold 15px Arial";
+		this.ctx.fillText("x"+this.lives, 40, 50);
+		
+		
+	} else if (this.game.level === 2) {
+		this.ctx.font = "bold 30px Arial";
+		this.ctx.shadowColor = "black";
+		this.ctx.shadowBlur = 7;
+		this.ctx.lineWidth = 5;
+		this.ctx.fillText("Level: " + this.game.level, 350, 30);
+		this.ctx.shadowBlur = 0;
+		this.ctx.fillStyle = "white";
+		this.ctx.fillText("Level: " + this.game.level, 350, 30);
+		
+		
+		if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
+		else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
+		
+		// Lives
+		this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
+		this.ctx.font = "bold 15px Arial";
+		this.ctx.fillText("x"+this.lives, 40, 50);
+		
+	}
+	
+	this.ctx.lineWidth = 1;
 	this.ctx.font = "bold 30px Arial";
-	
-	// Level
-	this.ctx.fillText("Level: 1", 350, 30);
-	
-	// Score
-	if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
-	else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
-	
     // Health
 	for (var i = 0; i < this.maxHealth; i++) {
 	    if (i < this.health) this.ctx.drawImage(AM.getAsset("./img/heart.png"), 50 + (i * 35), 10, 35, 35);
 	    else this.ctx.drawImage(AM.getAsset("./img/heartEmpty.png"), 50 + (i * 35), 10, 35, 35);
 	}
 	
-	// Lives
-	this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
-	this.ctx.font = "bold 15px Arial";
-	this.ctx.fillText("x"+this.lives, 40, 50);
-	this.ctx.font = "bold 30px Arial";
 
 	// Shield
 	for (var i = 0; i < this.shield; i++) this.ctx.drawImage(AM.getAsset("./img/PowerUp/shield.png"), 50 + (this.maxHealth * 35) + (i * 35), 10, 35, 35);
