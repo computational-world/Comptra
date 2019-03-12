@@ -44,6 +44,10 @@ function dropPowerUp(entity) {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/coin.png"), entity.x, entity.boundingbox.bottom - 35, 494, 496, 0.07, "coin");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
+	} else if (entity.powerUpType === "airstrike") {
+		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/jet.png"), entity.x, entity.boundingbox.bottom - (0.08 * 333), 825, 333, .08, "airstrike");
+		entity.game.addEntity(power);
+		entity.game.powerups.push(power);	
 	} else if (entity.powerUpType === "exit") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/exit.png"), entity.x, entity.boundingbox.bottom - 111, 128, 128, 1, "exit");
 		entity.game.addEntity(power);
@@ -161,6 +165,9 @@ AM.queueDownload("./img/explosion.png");
 AM.queueDownload("./img/effects.png");
 AM.queueDownload("./img/grenadeBoom.png");
 AM.queueDownload("./img/pointer.png");
+AM.queueDownload("./img/L2Background.png");
+AM.queueDownload("./img/enemies.png");
+AM.queueDownload("./img/woods.png");
 
 // powerups
 AM.queueDownload("./img/PowerUp/health.png");
@@ -214,11 +221,6 @@ AM.downloadAll(function () {
     gameEngine.start();
 	startInput();
 	
-	// Backgrounds (gameEngine, spritesheet, x, y, speed, numberOfRepeats)
-	gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/layer1.png"), -1535, 0, 35, 7));
-	gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/layer2.png"), -1535, -50, 75, 8));
-
-
 	gameEngine.createLevelOneMap();
 	gameEngine.createHero();	
 	gameShop = new GameShop(gameEngine, AM.getAsset("./img/pointer.png"));

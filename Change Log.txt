@@ -1,4 +1,14 @@
-3/8/19
+TO DO:
+	- make song start over, not continue when stopped.
+	
+	variable to store level edge for camera lock	
+	
+3/10/19
+	Features:
+		- Added extra life power-up
+		- Added sound for jet, grenade power-up, and airstrike power-up
+		
+3/9/19
 	Features:
 		- Added Airstrike power-up
 		- Added Double-Damage weapon

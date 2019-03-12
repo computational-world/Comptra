@@ -39,14 +39,14 @@ Tile.prototype.draw = function () {
 /*
 Background
 */
-function Background(game, spritesheet, x, y, speed, numberOfRepeats) {
-    this.animation = new Animation(spritesheet, 3072, 1536, 1, 0.1, 1, true, 0.5);
-    this.spritesheet = spritesheet;
+function Background(game, spritesheet, x, y, width, height, scale, speed, numberOfRepeats) {
+    this.animation = new Animation(spritesheet, width, height, 1, 0.1, 1, true, scale);
+	this.spritesheet = spritesheet;
     this.speed = speed;
     this.ctx = game.ctx;
 	this.game = game;
 	this.numberOfRepeats = numberOfRepeats;
-    Entity.call(this, game, x, y);
+    Entity.call(this, game, x, y, width, height, scale, speed, numberOfRepeats);
 }
 
 Background.prototype = new Entity();
@@ -183,6 +183,108 @@ TilePlatform.prototype.update = function () {
 }
 
 
+/*
+Moving Platform
+*/
+function MovingPlatform(game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+    horizontal, startdirection, moveUnits, x, y, width, height, numberOfTiles) {
+    this.ctx = game.ctx;
+	this.game = game;
+    this.spritesheet = spritesheet;
+    this.width = width;
+    this.height = height;
+	this.numberOfTiles = numberOfTiles;
+    this.x = x;
+    this.y = y;
+	this.speed = 100;
+    this.sourceXTopLeft = sourceXTopLeft;
+    this.sourceYTopLeft = sourceYTopLeft;
+    this.sourceXTopMid = sourceXTopMid;
+    this.sourceYTopMid = sourceYTopMid;
+    this.sourceXTopRight = sourceXTopRight;
+    this.sourceYTopRight = sourceYTopRight;
+	this.horizontal = horizontal;
+	this.direction = startdirection;
+	this.startDirection = startdirection;
+	this.moveUnits = moveUnits;
+	this.baseX = x;
+	this.baseY = y;
+    this.boundingbox = new BoundingBox(x, y, width*numberOfTiles, height);
+    Entity.call(game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+    horizontal, startdirection, moveUnits, x, y, width, height, numberOfTiles);
+}
+
+MovingPlatform.prototype = new Entity();
+MovingPlatform.prototype.constructor = MovingPlatform;
+
+MovingPlatform.prototype.update = function () {
+			
+	this.boundingbox = new BoundingBox(this.x, this.y, this.width*this.numberOfTiles, this.height);
+	
+	// horizontal
+	if (this.horizontal) {
+		this.x += this.game.clockTick * this.speed * this.direction;
+		if (this.startDirection === 1) {
+			if (this.x >= this.baseX + this.moveUnits*50) this.direction = -1;
+			else if (this.x <= this.baseX) this.direction = 1;	
+		} else {
+			if (this.x >= this.baseX) this.direction = -1;
+			else if (this.x <= this.baseX - this.moveUnits*50) this.direction = 1;
+		}
+		
+	}
+	// vertical 
+	else {
+		this.y += this.game.clockTick * this.speed * this.direction;
+		if (this.y >= this.baseY + this.moveUnits*50) this.direction = -1;
+		else if (this.y <= this.baseY) this.direction = 1;
+	}
+	this.x = Math.round(this.x);
+	this.y = Math.round(this.y);
+	
+    Entity.prototype.update.call(this);
+}
+
+MovingPlatform.prototype.draw = function () {
+	
+	for (var i=0; i < this.numberOfTiles; i++) {
+		if (i === 0) {
+			this.ctx.drawImage(this.spritesheet,
+					this.sourceXTopLeft, this.sourceYTopLeft,  // source from sheet
+					this.width, this.height,
+					this.x - Camera.x, this.y,
+					this.width, this.height);
+		}
+		else if (i < this.numberOfTiles - 1) {
+			this.ctx.drawImage(this.spritesheet,
+                     this.sourceXTopMid, this.sourceYTopMid,  // source from sheet
+                     this.width, this.height,
+                     this.x + (i * this.width) - Camera.x, this.y,
+                     this.width, this.height);
+		}
+		else {
+			this.ctx.drawImage(this.spritesheet,
+                     this.sourceXTopRight, this.sourceYTopRight,  // source from sheet
+                     this.width, this.height,
+                     this.x + (i * this.width) - Camera.x, this.y,
+                     this.width, this.height);
+		}
+	}
+
+	if (DEBUG) {
+		this.ctx.strokeStyle = "red";
+		this.ctx.strokeRect(this.x - Camera.x, this.y, this.width * this.numberOfTiles, this.height);
+		this.ctx.strokeStyle = "green";
+		this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
+	}
+	
+    Entity.prototype.draw.call(this);
+}
+
+
+
+
+
 /******************************************************************************************************************
 Waterfall
 */
@@ -274,7 +376,8 @@ Platform.prototype.update = function () {
 PowerUp
 */
 function PowerUp(game, spritesheet, x, y, width, height, scale, type) {
-	if (type === "shield" || type === "grenade" || type === "airstrike") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
+	if (type === "shield" || type === "grenade" 
+	|| type === "airstrike" || type === "1up") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
 	else if (type === "exit") this.animation = new Animation(spritesheet, width, height, 8, 0.03, 32, true, scale);
 	else this.animation = new Animation(spritesheet, width, height, 8, 0.08, 8, true, scale);
     this.ctx = game.ctx;
@@ -292,6 +395,8 @@ function PowerUp(game, spritesheet, x, y, width, height, scale, type) {
 	this.soundCoin = new Sound("audio/coin.wav");
 	this.soundHealth = new Sound("audio/health.wav");
 	this.soundShield = new Sound("audio/shield.wav");
+	this.sound1Up = new Sound("audio/1up.wav");
+	this.soundPowerUp = new Sound("audio/powerup.wav");
 	this.soundExit = new Sound("audio/exit.wav");
     Entity.call(this, game, x, y, width, height, scale, type);
 }
@@ -325,6 +430,14 @@ PowerUp.prototype.update = function () {
 			}	
 		}	
 	}
+	else if (this.type === "1up") {
+		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
+				if (DEBUG) console.log("Hero got " + this.type + " power up!");
+				this.sound1Up.play();
+				this.game.Hero.lives++;
+				this.removeFromWorld = true;
+		}	
+	}
 	else if (this.type === "coin") {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");
@@ -344,7 +457,7 @@ PowerUp.prototype.update = function () {
 	else if (this.type === "grenade") {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					
+					this.soundPowerUp.play();
 					// no specials
 					if (this.game.Hero.specials.length === 0) {
 						this.game.Hero.specials.push("grenade");
@@ -370,7 +483,7 @@ PowerUp.prototype.update = function () {
 	else if (this.type === "airstrike") {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					
+					this.soundPowerUp.play();
 					// no specials
 					if (this.game.Hero.specials.length === 0) {
 						this.game.Hero.specials.push("airstrike");
@@ -411,7 +524,8 @@ PowerUp.prototype.update = function () {
 
 PowerUp.prototype.draw = function () {
 	
-	this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	if (this.type !== "1up") this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+	else this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, this.x - Camera.x, this.y, 35, 35);
 	
 	if (DEBUG) {
 		this.ctx.strokeStyle = "red";
@@ -639,6 +753,125 @@ Turret.prototype.draw = function () {
         this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
     }
 }
+
+
+/*
+Aiming Turret
+*/
+function AimTurret(game, spritesheet, x, y, width, height, powerUp, powerUpType) {
+	//CustomAnimation(spriteSheet, startX, startY, offset, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
+		
+    this.animation = new CustomAnimation(spritesheet, 627, 211, 0, width, height, 1, 1.75, 1, false, 1);
+	this.animationShoot = new CustomAnimation(spritesheet, 627, 211, 0, width, height, 1, 1.75, 1, false, 1);
+	this.animationDie = new Animation(AM.getAsset("./img/explosion.png"), 128, 128, 4, 0.03, 16, false, 0.4);
+    this.ctx = game.ctx;
+    this.spritesheet = spritesheet;
+    this.game = game;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+    this.hitPoints = 3;
+    this.active = false;
+    this.powerUp = powerUp;
+    this.powerUpType = powerUpType;
+    this.shooting = false;
+	this.soundDeath = new Sound("audio/death-enemy.wav");
+    this.boundingbox = new BoundingBox(x, y+20, width, height);
+    Entity.call(game, spritesheet, x, y, width, height, powerUp, powerUpType);
+}
+
+AimTurret.prototype = new Entity();
+AimTurret.prototype.constructor = AimTurret;
+
+AimTurret.prototype.update = function () {
+    // monster dead
+    if (this.animationDie.isDone()) {
+        this.game.Hero.score += 250;
+        // drop powerUp
+        if (this.powerUp) dropPowerUp(this);
+    }
+
+    if (this.x - this.game.Hero.x < 405) {
+        this.active = true;
+    }
+
+	if (this.hitPoints > 0) {
+		if (this.active) {
+
+			// check for bullet
+			for (var i = 0; i < this.game.bullets.length; i++) {
+				var bullet = this.game.bullets[i];
+
+				// hit by bullet            
+				if (!bullet.hit && this.boundingbox.collide(bullet.boundingbox)) {
+					if (DEBUG) console.log("hit!");
+					bullet.hit = true;
+					this.hitPoints -= this.game.Hero.weaponDamage;
+				}
+			}
+
+			// check for Hero collide
+			if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
+				if (DEBUG) console.log("collide with hero!");
+				if (!this.game.Hero.hit) this.game.Hero.hit = true;
+			}
+
+			// shooting
+			if (this.animationShoot.elapsedTime + this.game.clockTick > this.animationShoot.totalTime) {
+					this.animationShoot.elapsedTime = 0;
+					this.animation.elapsedTime = 0;
+					this.shooting = false;
+					
+					var bullet = new Cannonball(this.game, this.x - 7, this.y + 29, -1);
+					this.game.addEntity(bullet);
+					this.game.bulletsBad.push(bullet);
+					
+			}
+			// idle
+			else if (this.animation.elapsedTime + this.game.clockTick > this.animation.totalTime) {
+					this.animationShoot.elapsedTime = 0;
+					this.animation.elapsedTime = 0;
+					this.shooting = true;
+			}
+		}
+	}
+    
+		
+    Entity.prototype.update.call(this);
+}
+
+AimTurret.prototype.draw = function () {
+
+	// dead
+	if (this.hitPoints <= 0) {	
+		if (this.animationDie.elapsedTime === 0) this.soundDeath.play();
+
+		if (this.animationDie.isDone()) {
+			for( var i = 0; i < this.game.monsters.length; i++){ 
+				if ( this.game.monsters[i] === this) {
+					this.game.monsters.splice(i, 1);				
+					this.removeFromWorld = true;
+				}
+			}	
+		}
+		else this.animationDie.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);		
+	} else {
+		if (this.shooting) { 
+			this.animationShoot.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y+20);
+		} else {
+			this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y+20);
+		}
+	}
+	
+    if (DEBUG) {
+        this.ctx.strokeStyle = "red";
+        this.ctx.strokeRect(this.x - Camera.x, this.y, this.width, this.height);
+        this.ctx.strokeStyle = "green";
+        this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
+    }
+}
+
 
 
 /*
@@ -1113,11 +1346,11 @@ Soldier.prototype.update = function () {
 	this.specialElapsedTime += this.game.clockTick;
 	this.hitElapsedTime += this.game.clockTick;
 	this.lastboundingbox = this.boundingbox;
+	this.lastBottom = this.boundingbox.bottom;
 	
 	if (this.specials.length > 0) this.currentSpecial = this.specials[this.specialsIndex];
 	else this.currentSpecial = "";
-	if (this.specialsIndex < 0) this.specialsIndex = 0;
-	
+	//if (this.specialsIndex < 0) this.specialsIndex = 0;
 	
 	 if (this.health <= 0) {
 		 this.game.gameOver = true;
@@ -1168,6 +1401,35 @@ Soldier.prototype.update = function () {
 		this.hit = false;
 	}
 
+	// moving platform
+	if (!this.falling && !this.jumping) {
+		for (var i = 0; i < this.game.movplatforms.length; i++) {
+			var plat = this.game.movplatforms[i];
+			if (this.platform === plat) {
+
+					if (plat.horizontal) this.x += Math.round(this.game.clockTick * plat.speed * plat.direction);
+					else this.y = plat.boundingbox.top - this.height;	
+				
+
+					// adjust camera
+					var moveTick = Math.round(this.game.clockTick * plat.speed * plat.direction);
+					if (!Camera.lock) {
+						if ((Camera.x + moveTick >= 0 && this.x - Camera.x >= 400 && plat.direction === 1) 
+							|| (Camera.x + moveTick >= 0 && this.x - Camera.x <= 400 && plat.direction === -1) ) Camera.x += moveTick;		
+					}			
+				
+				
+				
+				if (this.direction === 1) this.boundingbox = new BoundingBox(this.x+14, this.y, this.width-13, this.height);
+				else this.boundingbox = new BoundingBox(this.x+5, this.y, this.width-17, this.height);
+				
+				break;
+			
+			}
+		
+		}
+	}
+	
     // moving
     if (this.moving) {
 		if (this.direction === 1) this.boundingbox = new BoundingBox(this.x+14, this.y, this.width-13, this.height);
@@ -1184,13 +1446,15 @@ Soldier.prototype.update = function () {
 		}
 		
 		// adjust camera
-		if (Camera.lock === false) {
+		if (!Camera.lock) {
 			if ((Camera.x + moveTick >= 0 && this.x - Camera.x >= 400 && this.direction === 1) 
 				|| (Camera.x + moveTick >= 0 && this.x - Camera.x <= 400 && this.direction === -1) ) Camera.x += moveTick;		
 		}
 		
 	}
 		
+
+	
     // shoot
     if (this.shoot) {
 		
@@ -1253,7 +1517,7 @@ Soldier.prototype.update = function () {
 						
 						this.currentSpecial = this.specials[this.specialsIndex-1];
 						this.specials.splice(this.specialsIndex, 1);
-						if (this.specialsIndex === this.specials.length) this.specialsIndex -= 1;
+						if (this.specialsIndex === this.specials.length && this.specials.length > 0) this.specialsIndex -= 1;
 					}
 
 					// reset cooldown
@@ -1276,7 +1540,7 @@ Soldier.prototype.update = function () {
 						
 						this.currentSpecial = this.specials[this.specialsIndex-1];
 						this.specials.splice(this.specialsIndex, 1);
-						if (this.specialsIndex === this.specials.length) this.specialsIndex -= 1;
+						if (this.specialsIndex === this.specials.length && this.specials.length > 0) this.specialsIndex -= 1;
 					}
 
 					// reset cooldown
@@ -1284,7 +1548,7 @@ Soldier.prototype.update = function () {
 				}
 			}
 
-			console.log("index: " + this.specialsIndex);
+			//console.log("index: " + this.specialsIndex);
 			//this.specials.splice(this.currentSpecial, 1);
 
 		}
@@ -1333,7 +1597,7 @@ Soldier.prototype.update = function () {
         height = (4 * duration - 4 * duration * duration) * this.jumpHeight;
         this.y = this.basey - height;
 
-        this.lastBottom = this.boundingbox.bottom;
+        //this.lastBottom = this.boundingbox.bottom;
         this.boundingbox = new BoundingBox(this.x+2, this.y+2, this.width-7, this.height);
                 
         // check for platform
@@ -1491,13 +1755,13 @@ Soldier.prototype.drawUI = function () {
 	else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
 	
     // Health
-	this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
 	for (var i = 0; i < this.maxHealth; i++) {
 	    if (i < this.health) this.ctx.drawImage(AM.getAsset("./img/heart.png"), 50 + (i * 35), 10, 35, 35);
 	    else this.ctx.drawImage(AM.getAsset("./img/heartEmpty.png"), 50 + (i * 35), 10, 35, 35);
 	}
 	
 	// Lives
+	this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
 	this.ctx.font = "bold 15px Arial";
 	this.ctx.fillText("x"+this.lives, 40, 50);
 	this.ctx.font = "bold 30px Arial";
@@ -1581,7 +1845,7 @@ Bullet.prototype.constructor = Bullet;
 Bullet.prototype.update = function () {
 	if (!this.hit) {
 		this.x += this.game.clockTick * this.speed * this.direction;
-		this.y -= this.game.clockTick * this.speed * this.aimY/2;
+		this.y -= this.game.clockTick * this.speed * this.aimY/1.5;
 		this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
 		
 		var distance = Math.abs(this.x - this.startX);
@@ -1766,7 +2030,8 @@ function Jet(game, spritesheet, x, y) {
     this.y = y;
 	this.elapsedTime = 0;
 	this.baseX = x;
-
+	this.sound = new Sound("audio/jet.wav");
+	this.sound.play();
     Entity.call(this, game, this.x, this.y);
 }
 
@@ -1787,7 +2052,10 @@ Jet.prototype.update = function () {
 	
 	
 	this.x += this.game.clockTick * this.speed;
-	if (this.x > Camera.x + 800) this.removeFromWorld = true;
+	if (this.x > Camera.x + 800) {
+		//this.sound.stop();
+		this.removeFromWorld = true;
+	}
 	
     Entity.prototype.update.call(this);
 }
