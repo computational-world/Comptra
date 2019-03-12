@@ -36,6 +36,11 @@ var soundSong = new Sound("audio/track_1.wav");
 soundSong.sound.volume = 0.5;
 soundSong.sound.loop = true;
 
+var soundShopTheme = new Sound("audio/Shop/theme.mp3");
+soundShopTheme.sound.volume = 0.4;
+
+var soundGameOver = new Sound("audio/gameover.mp3");
+
 function dropPowerUp(entity) {
 	if (entity.powerUpType === "shield") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/shield.png"), entity.x, entity.boundingbox.bottom - 38, 256, 256, 0.15, "shield");
@@ -146,8 +151,8 @@ CustomAnimation.prototype.isDone = function () {
 
 var Camera = {
     x: 0,
-	//x: 5600,
 	lock: false,
+	max: 50000,
     width: WINDOW_WIDTH
 };
 
@@ -271,6 +276,10 @@ function loadCheckPoint() {
 
 
 function startGame() {
+	// set Camera max for lock
+	if (gameEngine.level === 1) Camera.max = 7400;
+	else if (gameEngine.level === 2) Camera.max = 20000;
+		soundSong.play();
 	
 	Camera.lock = false;
 	if (gameEngine.level === 1) {
@@ -556,6 +565,29 @@ function startInput() {
 				
                 break;
 				
+			// Right shift, cheat code: kill on-screen
+			case 16:
+				for (var i = 0; i < gameEngine.monsters.length; i++) {
+					var monster = gameEngine.monsters[i];
+					if (monster.x >= Camera.x && monster.x <= Camera.x + 800) monster.hitPoints -= 100;
+				}
+				break;
+
+			// "/" cheat code: warp
+			case 190:
+				if (gameEngine.level === 1) {
+					gameEngine.Hero.x = 7000;
+					gameEngine.Hero.y = 200;
+					Camera.x = 6600;
+				} else if (gameEngine.level === 2) {
+					gameEngine.Hero.x = 7000;
+					gameEngine.Hero.y = 200;
+
+					Camera.x = 6600;
+				}
+				gameEngine.Hero.falling = true;
+				
+				break;
 		}
 	});
 }

@@ -18,7 +18,6 @@ function GameEngine() {
     this.ctx = null;
     this.surfaceWidth = null;
     this.surfaceHeight = null;
-	this.levelEdge = 10000;
 }
 
 GameEngine.prototype.init = function (ctx) {
@@ -334,19 +333,6 @@ GameEngine.prototype.loadLevelTwo = function() {
 	
 	
 	gameEngine.createLevelTwoMonsters();
-	
-	/*
-	var pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, 1, 5, 1050, 500, 50, 50, 4);
-	this.addEntity(pf);
-	this.platforms.push(pf);
-	this.movplatforms.push(pf);
-	
-	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, false, 1, 5, 1050, 300, 50, 50, 4);
-	this.addEntity(pf);
-	this.platforms.push(pf);
-	this.movplatforms.push(pf);
-	
-	*/
 	
 	//soundSong.play();
 

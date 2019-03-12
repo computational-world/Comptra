@@ -430,7 +430,7 @@ PowerUp.prototype.update = function () {
 		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
 				if (DEBUG) console.log("Hero got " + this.type + " power up!");
 				this.sound1Up.play();
-				if (this.game.Hero.lives < 3) this.game.Hero.lives++;
+				this.game.Hero.lives++;
 				this.removeFromWorld = true;
 		}	
 	}
@@ -513,6 +513,8 @@ PowerUp.prototype.update = function () {
 					this.game.shop = true;
 					this.game.checkPoint = false;
 					this.game.endLevel = true;
+					soundSong.stop();
+					soundShopTheme.play();
 					resetGame();
 		}
 	}
@@ -1074,6 +1076,7 @@ function Boss1(game, spritesheet, x, y, width, height, powerUp, powerUpType) {
 	this.shootCount = 0;
 	this.idleState = 1;
 	this.soundDeath = new Sound("audio/death-enemy.wav");
+	this.soundVictory = new Sound("audio/victory.mp3");
     this.boundingbox = new BoundingBox(x+27, y, this.width-35, this.height);
     Entity.call(game, spritesheet, x, y, width, height, powerUp, powerUpType);
 }
@@ -1202,7 +1205,10 @@ Boss1.prototype.draw = function () {
 	
 	// dead
 	if (this.hitPoints <= 0) {	
-		if (this.animationDie.elapsedTime === 0) this.soundDeath.play();
+		if (this.animationDie.elapsedTime === 0) {
+			this.soundDeath.play();
+			this.soundVictory.play();
+		}
 
 		if (this.animationDie.isDone()) {
 			this.soundDeath.play();
@@ -1342,7 +1348,6 @@ Soldier.prototype.reset = function() {
 
 Soldier.prototype.update = function () {
 	if (!this.visible) return;
-	
 	this.shootElapsedTime += this.game.clockTick;
 	this.specialElapsedTime += this.game.clockTick;
 	this.hitElapsedTime += this.game.clockTick;
@@ -1382,6 +1387,7 @@ Soldier.prototype.update = function () {
 	
 	
 	if (this.lives <= 0) {
+		soundGameOver.play();
 		this.game.gameOver = true;
 		resetGame();
 		this.game.checkPoint = false;
@@ -1451,12 +1457,12 @@ Soldier.prototype.update = function () {
 
 		// move hero
 		var moveTick = Math.round(this.game.clockTick * this.speed * this.direction);
-		if (this.x + moveTick >= -5 && this.x + moveTick <= 7400) this.x += moveTick;
+		if (this.x + moveTick >= -5 && this.x + moveTick <= Camera.max) this.x += moveTick;
 		
 		// lock camera at boss
-		if (!Camera.lock && Camera.x >= 6650) {
+		if (!Camera.lock && Camera.x >= Camera.max - 750) {
 			Camera.lock = true;
-			Camera.x = 6650;
+			Camera.x = Camera.max - 750;
 		}
 		
 		// adjust camera
@@ -1758,44 +1764,30 @@ Soldier.prototype.draw = function () {
 
 
 Soldier.prototype.drawUI = function () {
-	if (this.game.level === 1) {
-		
-		this.ctx.font = "bold 30px Arial";
-		
-		// Level
-		this.ctx.fillText("Level: " + this.game.level, 350, 30);
-		
-		// Score
-		if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
-		else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
-		
-		// Lives
-		this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
-		this.ctx.font = "bold 15px Arial";
-		this.ctx.fillText("x"+this.lives, 40, 50);
-		
-		
-	} else if (this.game.level === 2) {
-		this.ctx.font = "bold 30px Arial";
-		this.ctx.shadowColor = "black";
-		this.ctx.shadowBlur = 7;
-		this.ctx.lineWidth = 5;
-		this.ctx.fillText("Level: " + this.game.level, 350, 30);
-		this.ctx.shadowBlur = 0;
-		this.ctx.fillStyle = "white";
-		this.ctx.fillText("Level: " + this.game.level, 350, 30);
-		
-		
-		if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
-		else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
-		
-		// Lives
-		this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
-		this.ctx.font = "bold 15px Arial";
-		this.ctx.fillText("x"+this.lives, 40, 50);
-		
-	}
 	
+	// Level
+	this.ctx.font = "bold 30px Arial";
+	this.ctx.lineWidth = 5;
+	this.ctx.strokeText("Level: " + this.game.level, 350, 30);
+	this.ctx.fillStyle = "white";
+	this.ctx.fillText("Level: " + this.game.level, 350, 30);
+	
+	// Score
+	this.ctx.lineWidth = 5;
+	if (this.score === 0) this.ctx.strokeText("Score: " + this.score, 675, 30);
+	else this.ctx.strokeText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
+	this.ctx.fillStyle = "white";
+	if (this.score === 0) this.ctx.fillText("Score: " + this.score, 675, 30);
+	else this.ctx.fillText("Score: " + this.score, 675 - ((Math.log10(this.score) + 1) * 10), 30);
+	
+	// Lives
+	this.ctx.drawImage(AM.getAsset("./img/hero.png"), 24, 143, 50, 50, 0, 0, 50, 50);
+	this.ctx.font = "bold 15px Arial";
+	this.ctx.lineWidth = 2;
+	this.ctx.strokeText("x"+this.lives, 40, 50);
+	this.ctx.fillStyle = "white";
+	this.ctx.fillText("x"+this.lives, 40, 50);
+			
 	this.ctx.lineWidth = 1;
 	this.ctx.font = "bold 30px Arial";
     // Health
@@ -1812,9 +1804,16 @@ Soldier.prototype.drawUI = function () {
 	// context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);
 	
 	// Coins
+	
 	if (this.coins === 0) this.ctx.drawImage(AM.getAsset("./img/PowerUp/coinIcon.png"), 730, 40, 35, 35);
 	else {
 		this.ctx.drawImage(AM.getAsset("./img/PowerUp/coinIcon.png"), 740 - (Math.log10(this.coins) + 1) * 10, 40, 35, 35);
+		this.ctx.shadowColor = "black";
+		this.ctx.shadowBlur = 7;
+		this.ctx.lineWidth = 5;
+		this.ctx.strokeText(this.coins, 785 - (Math.log10(this.coins) + 1) * 10, 70);	
+		this.ctx.shadowBlur = 0;
+		this.ctx.fillStyle = "white";
 		this.ctx.fillText(this.coins, 785 - (Math.log10(this.coins) + 1) * 10, 70);	
 	}
 
@@ -1834,21 +1833,21 @@ Soldier.prototype.drawUI = function () {
 	}
 	
 	if (this.specials.length > 0) {
+		this.ctx.font = "bold 15px Arial";
+		
 		// grenades
 		if (this.currentSpecial === "grenade") {
 			this.ctx.drawImage(AM.getAsset("./img/PowerUp/grenade.png"), 0, 0, 512, 512, 105, 61, 30, 30);
-			this.ctx.font = "bold 15px Arial";
 			this.ctx.fillText(this.grenades, 137, 92);
-			this.ctx.font = "bold 30px Arial";
 		}
 		
 		// air strikes
 		else if (this.currentSpecial === "airstrike") {
 			this.ctx.drawImage(AM.getAsset("./img/PowerUp/jet.png"), 0, 0, 825, 333, 95, 65, 50, 20);
-			this.ctx.font = "bold 15px Arial";
 			this.ctx.fillText(this.airstrikes, 137, 92);
-			this.ctx.font = "bold 30px Arial";
 		}
+		
+		this.ctx.font = "bold 30px Arial";
 	}	
 }
 

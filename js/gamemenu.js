@@ -19,6 +19,9 @@ function GameShop(game, spritesheet) {
 	this.moveUp = false;
 	this.purchaseFail = false;
 	this.game = game;
+	this.soundPurchase = new Sound("audio/Shop/purchase.mp3");
+	this.soundMove = new Sound("audio/Shop/move.wav");
+	this.soundError = new Sound("audio/Shop/error.wav");
 }
 
 GameShop.prototype = new Entity();
@@ -35,9 +38,11 @@ GameShop.prototype.purchaseItem = function() {
 		var item = this.items[i];
 		if (item.offset + this.boundedTop === this.basey) {
 			if (item.type === "Shield" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
 				this.game.Hero.shield = 3;
 				this.game.Hero.coins -= item.price;
 			} else if (item.type === "Grenade" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
 				if (this.hasSpecial("grenade")) this.game.Hero.grenades++;
 				else {
 					this.game.Hero.specials.push("grenade");
@@ -45,6 +50,7 @@ GameShop.prototype.purchaseItem = function() {
 				}
 				this.game.Hero.coins -= item.price;
 			} else if (this.game.Hero.coins < item.price) {
+				this.soundError.play();
 				this.purchaseFail = true;
 			}
 			break;
@@ -66,6 +72,7 @@ GameShop.prototype.update = function () {
 		this.pointerY = this.basey + this.offset;
 		this.basey = this.pointerY;
 		this.moveDown = false;
+		this.soundMove.play();
 		
 	} else if (this.moveUp) {
 		var newY = this.basey - this.offset;
@@ -75,6 +82,7 @@ GameShop.prototype.update = function () {
 			this.basey = this.pointerY;
 		}
 		this.moveUp = false;
+		this.soundMove.play();
 	}
 	var duration = this.animation.elapsedTime + this.game.clockTick;
 	if (duration > this.animation.totalTime / 2) duration = this.animation.totalTime - duration;
@@ -314,7 +322,8 @@ function ContinueButton(x, y, width, height) {
 }
 
 ContinueButton.prototype.isClick = function(pos) {
-    return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
+    soundShopTheme.stop();
+	return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
 }
 
 // draw rounding corner rectangle.. Source: https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas

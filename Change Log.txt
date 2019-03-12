@@ -1,8 +1,18 @@
 TO DO:
+	after loading check point and going to level 2, level 1 platforms exist 
 	- make song start over, not continue when stopped.
 	
-	variable to store level edge for camera lock	
-	
+3/11/19
+	Features:
+		- Added sounds for shop: move, purchase, error
+		- Added song switching between levels
+		- Added shop theme song
+		- Added Camera variable:max, to set the lock position of each level
+		- Added cheat codes for testing purposes (warp, kill on-screen)
+		
+		Bug Fixes:
+		- Fixed UI text to be clearly visible on all levels
+		
 3/10/19
 	Features:
 		- Added extra life power-up
