@@ -207,6 +207,9 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 	// Boss 1
 	var Boss = new Boss1(gameEngine, AM.getAsset("./img/mechs.png"), 7350, 550-81, 140, 108, true, "exit");
 	this.addMonsters(Boss);
+	
+	//var bat = new Bat(gameEngine, 500, 300, -1);
+	//this.addMonsters(bat);
 }
 
 /** Load Level One Check Point.*/
@@ -227,7 +230,7 @@ GameEngine.prototype.loadLevelOneCheckPoint = function() {
 	this.addMonsters(monster);
 	
 	// Boss 1
-	var Boss = new Boss1(gameEngine, AM.getAsset("./img/mechs.png"), 7350, 550-81, 140, 108, true, "exit");
+	var Boss = new Boss1(gameEngine, AM.getAsset("./img/mechs.png"), 7350, 550-81, 140, 108, 5, true, "exit");
 	this.addMonsters(Boss);
 }
 
@@ -261,7 +264,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 1600, 300, 47, 30, true, "airstrike");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 2450, 500, 47, 30, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 2450, 500, 50, 50, true, "health");
 	this.addMonsters(monster);
 	
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 3200, 400, 50, 50, false, "");
@@ -276,7 +279,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 3350, 450-81, 140, 108, true, "coin");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 4350, 200, 47, 30, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 4350, 200, 50, 50, true, "coin");
 	this.addMonsters(monster);
 	
 	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 4800, 550, 47, 30, false, "");
@@ -287,6 +290,22 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	
 	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 6200, 450-81, 140, 108, true, "coin");
 	this.addMonsters(monster);
+	
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "health");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 8625, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 9025, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 9050, 350-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+	
+	// Boss 2
+	var Boss = new Boss2(gameEngine, AM.getAsset("./img/Boss2.png"), 10670, 370, 87, 110, 2, true, "exit");
+	this.addMonsters(Boss);
 }
 
 /** Load level 2*/
@@ -295,47 +314,12 @@ GameEngine.prototype.loadLevelTwo = function() {
 	// background 
 	gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/L2Background.png"), -200, -180, 928, 792, 1, 50, 25));
 	
-	// powerups
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 4950, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
-	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 5450, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 5550, 150 - (0.07 * 512), 512, 512, .07, "grenade");
-	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 500, 550 - (0.07 * 512), 512, 512, .07, "grenade");
+	// Waterfall(game, spritesheet, sourceXWater, sourceYWater, sourceXTopSplash, sourceYTopSplash, sourceXBotSplash, sourceYBotSplash, 
+	// x, y, width, height, waterfallWidth, waterfallHeight)
+	// waterfall
+	this.addEntity(new Waterfall(gameEngine, AM.getAsset("./img/ForestTiles.png"), 318, 679, 490, 679, 490, 716, 
+	10000, 300, 50, 50, 16, 6));
 	
-	//function(sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
-											//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles)
-	//TilePlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3000, 500, 50, 50, 20)
-	
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1500, 350, 50, 50, 5);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1850, 450, 50, 50, 5);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 0, 550, 50, 50, 50);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 2600, 450, 50, 50, 20);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3650, 350, 50, 50, 7);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 4050, 250, 50, 50, 7);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 5600, 450, 50, 50, 14);
-	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 6400, 550, 50, 50, 14);
-	
-	//MovingPlatform(game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
-    //horizontal, direction, moveUnits, x, y, width, height, numberOfTiles)
-	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, 1, 6, 4450, 250, 50, 50, 4);
-	this.addEntity(pf);
-	this.platforms.push(pf);
-	this.movplatforms.push(pf);
-	
-	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, -1, 6, 5300, 250, 50, 50, 4);
-	this.addEntity(pf);
-	this.platforms.push(pf);
-	this.movplatforms.push(pf);
-	
-	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, false, 1, 7, 7150, 200, 50, 50, 4);
-	this.addEntity(pf);
-	this.platforms.push(pf);
-	this.movplatforms.push(pf);
-	
-	
-	gameEngine.createLevelTwoMonsters();
-	
-	//soundSong.play();
-
 	// rock
 	this.createTile(AM.getAsset("./img/ForestTiles.png"), 111, 866, 30, 16, 100, 550-16, 1, 1);
 	this.createTile(AM.getAsset("./img/ForestTiles.png"), 111, 866, 30, 16, 600, 550-16, 1, 1);
@@ -347,6 +331,7 @@ GameEngine.prototype.loadLevelTwo = function() {
 	
 	// small tree
 	this.createTile(AM.getAsset("./img/ForestTiles.png"), 206, 692, 28, 39, 2750, 450 - 39, 1, 1 );
+	this.createTile(AM.getAsset("./img/ForestTiles.png"), 206, 692, 28, 39, 7550, 200 - 39, 1, 1 );
 	
 	// large tree 168, 681
 	this.createTile(AM.getAsset("./img/ForestTiles.png"), 168, 681, 28, 50, 3800, 350 - 50, 1, 1 );
@@ -369,17 +354,77 @@ GameEngine.prototype.loadLevelTwo = function() {
 	this.createTile(AM.getAsset("./img/woods.png"), 141, 982, 24, 32, 400, 550 - 32, 1, 1);
 	this.createTile(AM.getAsset("./img/woods.png"), 141, 982, 24, 32, 6050, 450 - 32, 1, 1);
 	this.createTile(AM.getAsset("./img/woods.png"), 141, 982, 24, 32, 6800, 550 - 32, 1, 1);
+	this.createTile(AM.getAsset("./img/woods.png"), 141, 982, 24, 32, 7800, 200 - 32, 1, 1);
 	
 	// yellow flower right
 	this.createTile(AM.getAsset("./img/woods.png"), 82, 1030, 24, 32, 1250, 550 - 32, 1, 1);
 	this.createTile(AM.getAsset("./img/woods.png"), 82, 1030, 24, 32, 6650, 550 - 32, 1, 1);
 	this.createTile(AM.getAsset("./img/woods.png"), 82, 1030, 24, 32, 3250, 450 - 32, 1, 1);
 	
+	// powerups
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 4950, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
+	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 5450, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 5550, 150 - (0.07 * 512), 512, 512, .07, "grenade");	
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 8250, 150 - (0.07 * 512), 512, 512, .07, "grenade");
+	
+	//function(sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+											//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles)
+	//TilePlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3000, 500, 50, 50, 20)
+	
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1500, 350, 50, 50, 5);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1850, 450, 50, 50, 5);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 0, 550, 50, 50, 50);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 2600, 450, 50, 50, 20);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3650, 350, 50, 50, 7);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 4050, 250, 50, 50, 7);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 5600, 450, 50, 50, 14);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 6400, 550, 50, 50, 14);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 7400, 200, 50, 50, 14);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 8600, 200, 50, 50, 2);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 9000, 200, 50, 50, 2);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 8200, 350, 50, 50, 20);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 9900, 300, 50, 50, 2);
+	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 9800, 500, 50, 50, 20);
+	
+	
+	//MovingPlatform(game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+    //horizontal, direction, moveUnits, x, y, width, height, numberOfTiles)
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, 1, 6, 4450, 250, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, -1, 6, 5300, 250, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, false, 1, 7, 7150, 200, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, true, 1, 5, 9250, 350, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, false, 1, 6, 10250, 150, 50, 50, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, false, -1, 6, 10450, 450, 50, 50, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	gameEngine.createLevelTwoMonsters();
 	
 	// water
-	this.createTile(AM.getAsset("./img/ForestTiles.png"), 372, 788, 50, 50, 0, 600, 200, 2);
+	this.createTile(AM.getAsset("./img/ForestTiles.png"), 372, 788, 50, 50, 0, 600, 230, 2);
 	
-	// gameEngine.addEntity(gameEngine.Hero);
+	
 }
 
 function Timer() {
