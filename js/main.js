@@ -4,7 +4,7 @@ var gameShop;
 var gameMenu;
 // var database = new Database();
 const WINDOW_WIDTH = 800;
-const DEBUG = true;
+const DEBUG = false;
 
 var check_point_x = {
 	"level1": 4000
@@ -289,17 +289,10 @@ function startGame() {
 
 		gameEngine.loadLevelOne();
 	} else {
-		
-			for (var i = 0; i < gameEngine.monsters.length; i++) {
-				gameEngine.monsters[i].removeFromWorld = true;
-				gameEngine.monsters.splice(i, 1);
-				
-			}
-			for (var i = 0; i < gameEngine.platforms.length; i++) {
-				gameEngine.platforms[i].removeFromWorld = true;
-				gameEngine.platforms.splice(i, 1);
-				
-			}
+			
+			// gameEngine.monsters.splice(0, gameEngine.monsters.length);
+			// gameEngine.platforms.splice(0, gameEngine.platforms.length);
+			
 
 			for (var i = 0; i < gameEngine.entities.length; i++) {
 				var entity = gameEngine.entities[i];
@@ -352,16 +345,9 @@ function resetGame() {
 	}
 
 	
-	for (var i = 0; i < gameEngine.monsters.length; i++) {
-		gameEngine.monsters[i].removeFromWorld = true;
-		gameEngine.monsters.splice(i, 1);
-		
-	}
-	for (var i = 0; i < gameEngine.platforms.length; i++) {
-		gameEngine.platforms[i].removeFromWorld = true;
-		gameEngine.platforms.splice(i, 1);
-		
-	}
+	gameEngine.monsters.splice(0, gameEngine.monsters.length);
+	gameEngine.platforms.splice(0, gameEngine.platforms.length);
+			
 	
 	for (var i = 0; i < gameEngine.entities.length; i++) {
 		var entity = gameEngine.entities[i];
@@ -421,13 +407,13 @@ function startInput() {
 			// gameEngine.Hero.removeFromWorld = false;
 			gameEngine.Hero.visible = true;
 			resetGame();
-			alert(gameEngine.platforms.length);
-			alert(gameEngine.entities.length);
+			// alert(gameEngine.platforms.length);
+			// alert(gameEngine.entities.length);
 			gameEngine.shop = false;
 			gameEngine.endLevel = false;
 			startGame();
-			alert(gameEngine.platforms.length);
-			alert(gameEngine.entities.length);
+			// alert(gameEngine.platforms.length);
+			// alert(gameEngine.entities.length);
 		}
 		
 		

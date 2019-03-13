@@ -935,16 +935,7 @@ Mech.prototype.update = function () {
     
     if (this.x - this.game.Hero.x < 405) {
         this.active = true;
-		// if (!this.game.checkPoint) {
-			// heroCheckPoint.x = this.game.Hero.x;
-			// heroCheckPoint.y = this.game.Hero.y;
-			// heroCheckPoint.cameraX = Camera.x;
-			
-		// }
-		// this.game.checkPoint = true;
 		
-		// saveCheckPoint();
-		// alert("Check Point");
     }
 	
 	//console.log("jumping=" + this.jumping);
