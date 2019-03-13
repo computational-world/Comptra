@@ -7,10 +7,10 @@ function GameShop(game, spritesheet) {
 	this.animation =  new Animation(spritesheet, this.width, this.height, 1, 0.5, 1, true, 1.2);
 	this.pointerX = 20;
 	this.offset = 50;
-	this.item1 = new ShopItem(game, AM.getAsset("./img/PowerUp/grenade.png"), 410, 95, 35, 35, 0, 2, "Grenade");
-	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 410, 95, 35, 35, 50, 3, "Shield");
-	this.item3 = new ShopItem(game, AM.getAsset("./img/PowerUp/jet.png"), 410, 95, 35, 35, 100, 5, "Missiles");
-	this.item4 = new ShopItem(game, AM.getAsset("./img/bullet2.png"), 410, 95, 35, 35, 150, 3, "x2 Pain");
+	this.item1 = new ShopItem(game, AM.getAsset("./img/PowerUp/grenade.png"), 430, 95, 35, 35, 0, 1, "Grenade");
+	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 430, 95, 35, 35, 50, 2, "Shield");
+	this.item3 = new ShopItem(game, AM.getAsset("./img/PowerUp/jet.png"), 430, 95, 35, 35, 100, 4, "Airstrike");
+	this.item4 = new ShopItem(game, AM.getAsset("./img/bullet2.png"), 430, 95, 35, 35, 150, 5, "x2 Damage");
 	this.items = [];
 	this.addItemToShop();
 	this.pointerY = -25;

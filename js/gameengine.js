@@ -172,7 +172,7 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 	// Power Ups
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 1050, 500 - (0.07 * 512), 512, 512, .07, "grenade");
 	gameEngine.createPowerUp(AM.getAsset("./img/hero.png"), 3350, 200 - (0.75 * 50), 50, 50, .75, "1up");
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/jet.png"), 500, 500 - (0.08 * 333), 825, 333, .08, "airstrike");
+	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/jet.png"), 500, 500 - (0.08 * 333), 825, 333, .08, "airstrike");
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 3350, 200 - (0.07 * 496), 494, 496, 0.07, "coin");
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/shield.png"), 2875, 500 - (0.15 * 256), 256, 256, 0.15, "shield");
 

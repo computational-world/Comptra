@@ -1572,7 +1572,7 @@ function Soldier(game, spritesheet, x, y) {
 	this.lives = 3;
 	this.weapons = [];
 	this.weapons.push("basic");
-	this.weapons.push("three-way");
+//	this.weapons.push("three-way");
 	this.weaponsIndex = 0;
 	this.weapon = "basic";
 	this.weaponDamage = 1;
