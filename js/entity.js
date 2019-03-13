@@ -1630,7 +1630,7 @@ Soldier.prototype.update = function () {
 	
 	if (this.game.level === 1 && check_point_x.level1 - this.x < 405) {
 		if (!this.game.checkPoint) {
-			alert("hi");
+			// alert("hi");
 			heroCheckPoint.x = this.game.Hero.x;
 			heroCheckPoint.y = this.game.Hero.y;
 			heroCheckPoint.cameraX = Camera.x;

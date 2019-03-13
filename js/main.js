@@ -225,7 +225,7 @@ AM.downloadAll(function () {
 	var creditButton = new CreditButton(320, 380, 150, 30);
 	var gobackButton = new GoBackButton(350, 400, 100, 30);
 	var playAgainButton = new PlayAgainButton(350, 300, 150, 35);
-	var continueButton = new ContinueButton(335, 575, 150, 35);
+	var continueButton = new ContinueButton(335, 350, 150, 35);
 	
 	gameEngine.playButton = playButton;
 	gameEngine.settingButton = settingButton;
@@ -282,7 +282,7 @@ function loadCheckPoint() {
 			gameEngine.Hero.grenades = heroCheckPoint.grenades;
 			gameEngine.Hero.score = heroCheckPoint.score; 
 			gameEngine.loadLevelOne();
-			alert("Loading CheckPoint");
+			
 			// alert(gameEngine.Hero.specials.length);
 		}
 	} else {
@@ -306,7 +306,7 @@ function loadCheckPoint() {
 		}
 	}
 	
-	
+	alert("Loading CheckPoint");
 	
 }
 
@@ -394,6 +394,15 @@ function resetGame() {
 	
 }
 
+function nextLevel() {
+	gameEngine.checkPoint = false;
+	gameEngine.Hero.visible = true;
+	resetGame();
+	gameEngine.shop = false;
+	gameEngine.endLevel = false;
+	soundShopTheme.stop();
+	startGame();
+}
 
 function startInput() {
 	
@@ -436,17 +445,7 @@ function startInput() {
 		}
 		
 		if (gameEngine.shop && gameEngine.continueButton.isClick(pos)) {
-			gameEngine.checkPoint = false;
-			// gameEngine.Hero.removeFromWorld = false;
-			gameEngine.Hero.visible = true;
-			resetGame();
-			// alert(gameEngine.platforms.length);
-			// alert(gameEngine.entities.length);
-			gameEngine.shop = false;
-			gameEngine.endLevel = false;
-			startGame();
-			// alert(gameEngine.platforms.length);
-			// alert(gameEngine.entities.length);
+			nextLevel();
 		}
 		
 		

@@ -34,12 +34,14 @@ GameShop.prototype.addItemToShop = function() {
 	this.items.push(this.item2);
 	this.items.push(this.item3);
 	this.items.push(this.item4);
+	this.items.push(gameEngine.continueButton);
 }
 
 GameShop.prototype.purchaseItem = function() {
 	this.hasAttemptPurchase = true;
 	for (var i = 0; i < this.items.length; i++) {
 		var item = this.items[i];
+		// alert(this.basey);
 		if (item.offset + this.boundedTop === this.basey) {
 			if (item.type === "Shield" && this.game.Hero.coins >= item.price) {
 				this.soundPurchase.play();
@@ -56,8 +58,10 @@ GameShop.prototype.purchaseItem = function() {
 			} else if (this.game.Hero.coins < item.price) {
 				this.soundError.play();
 				this.purchaseFail = true;
-			}
+			} 
 			break;
+		} else if (item instanceof ContinueButton && this.basey === 225) {
+			nextLevel();
 		}
 	}
 	
@@ -122,7 +126,7 @@ GameShop.prototype.draw = function () {
 		// you can style here better
 		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 310, 450);
 		else if (this.hasAttemptPurchase)this.game.ctx.fillText("Purchased", 350, 450);
-		this.game.ctx.fillText("Press Enter to Purchase", 290, 500);
+		this.game.ctx.fillText("Press Enter to Select", 310, 650);
 		
 		//  continue button
 		this.game.ctx.fillStyle = "#6AE1F5";
@@ -130,7 +134,7 @@ GameShop.prototype.draw = function () {
 									this.game.continueButton.height, 5, true, true);
 		this.game.ctx.fillStyle = "#DAFEFF";
 		this.game.ctx.font = "25px Verdana";
-		this.game.ctx.fillText("CONTINUE", 342, 600);
+		this.game.ctx.fillText("CONTINUE", 342, 375);
 		Entity.prototype.draw.call(this);
 	}
 }
@@ -328,7 +332,7 @@ function ContinueButton(x, y, width, height) {
 }
 
 ContinueButton.prototype.isClick = function(pos) {
-    soundShopTheme.stop();
+    
 	return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
 }
 
