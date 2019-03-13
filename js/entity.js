@@ -502,6 +502,7 @@ PowerUp.prototype.update = function () {
 					} 
 					// increment airstrikes
 					else {
+						alert("in here");
 						for (var i = 0; i < this.game.Hero.specials.length; i ++) {
 							if (this.game.Hero.specials[i] === "airstrike") {
 								this.game.Hero.airstrikes++; 
@@ -1629,9 +1630,15 @@ Soldier.prototype.update = function () {
 	
 	if (this.game.level === 1 && check_point_x.level1 - this.x < 405) {
 		if (!this.game.checkPoint) {
+			alert("hi");
 			heroCheckPoint.x = this.game.Hero.x;
 			heroCheckPoint.y = this.game.Hero.y;
 			heroCheckPoint.cameraX = Camera.x;
+			heroCheckPoint.coins = this.coins;
+			heroCheckPoint.score = 0;
+			heroCheckPoint.specials = this.specials;
+			heroCheckPoint.airstrikes = this.airstrikes;
+			heroCheckPoint.grenades = this.grenades;
 			
 		}
 		this.game.checkPoint = true;
@@ -1643,15 +1650,20 @@ Soldier.prototype.update = function () {
 		
 		this.lives--;
 		this.health = this.maxHealth;
-		if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
-		else {
-			this.x = 200;
-			this.y = 0;
-			Camera.x = 0;
-			Camera.lock = false;
-			this.falling = true;
+		if (this.lives > 0) loadCheckPoint();
+		// if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
+		// else {
 			
-		}
+			// this.coins = heroCheckPoint.coins;
+			// this.specials = heroCheckPoint.specials;
+			// this.score = heroCheckPoint.score;
+			// this.x = 200;
+			// this.y = 0;
+			// Camera.x = 0;
+			// Camera.lock = false;
+			// this.falling = true;
+			
+		// }
 	}
 	
 	
@@ -1920,9 +1932,8 @@ Soldier.prototype.update = function () {
 
     // Fall off screen
     if (this.y > 700) {
-
 		
-		// alert("Hi");
+		
 		this.health = 0;
 		// this.game.shop = true;
 		this.y = -50;

@@ -14,6 +14,11 @@ var heroCheckPoint = {
 	x: 0,
 	y: 0,
 	cameraX: 0,
+	coins: 0,
+	score: 0,
+	specials: [],
+	airstrikes: 0,
+	grenades: 0
 };
 
 
@@ -261,19 +266,48 @@ function loadCheckPoint() {
 		gameEngine.entities[i].removeFromWorld = true;
 	}
 	
-	if (gameEngine.level === 1) {
+	if (!gameEngine.checkPoint) {
+		if (gameEngine.level === 1) {
+			// remove platforms and monsters and reload
+			gameEngine.monsters.splice(0, gameEngine.monsters.length);
+			gameEngine.platforms.splice(0, gameEngine.platforms.length);
+			gameEngine.powerups.splice(0, gameEngine.powerups.length);
+			Camera.x = heroCheckPoint.cameraX;
+			gameEngine.Hero = hero;
+			gameEngine.Hero.x = 200;
+			gameEngine.Hero.y = 0;
+			gameEngine.Hero.coins = heroCheckPoint.coins;
+			gameEngine.Hero.specials = heroCheckPoint.specials;
+			gameEngine.Hero.airstrikes = heroCheckPoint.airstrikes;
+			gameEngine.Hero.grenades = heroCheckPoint.grenades;
+			gameEngine.Hero.score = heroCheckPoint.score; 
+			gameEngine.loadLevelOne();
+			alert("Loading CheckPoint");
+			// alert(gameEngine.Hero.specials.length);
+		}
+	} else {
 		
-		hero.x = heroCheckPoint.x;
-		hero.y = 0;
-		hero.falling = true;
-		
-		Camera.x = heroCheckPoint.cameraX;
-		gameEngine.createLevelOneMap();
-		gameEngine.loadLevelOneCheckPoint();
-		gameEngine.Hero = hero;
-		gameEngine.addEntity(gameEngine.Hero);
+		if (gameEngine.level === 1) {
+			
+			hero.x = heroCheckPoint.x;
+			hero.y = 0;
+			hero.coins = heroCheckPoint.coins;
+			hero.specials = heroCheckPoint.specials;
+			hero.airstrikes = heroCheckPoint.airstrikes;
+			hero.grenades = heroCheckPoint.grenades;
+			hero.score = heroCheckPoint.score; 
+			hero.falling = true;
+			
+			Camera.x = heroCheckPoint.cameraX;
+			gameEngine.createLevelOneMap();
+			gameEngine.loadLevelOneCheckPoint();
+			gameEngine.Hero = hero;
+			gameEngine.addEntity(gameEngine.Hero);
+		}
 	}
-	alert("Loading CheckPoint");
+	
+	
+	
 }
 
 
@@ -281,17 +315,16 @@ function loadCheckPoint() {
 function startGame() {
 	// set Camera max for lock
 	if (gameEngine.level === 1) Camera.max = 7400;
-	else if (gameEngine.level === 2) Camera.max = 10750;
+	else if (gameEngine.level === 2) {
+		Camera.max = 10750;
 		soundSong.play();
+	}
 	
 	Camera.lock = false;
 	if (gameEngine.level === 1) {
 
 		gameEngine.loadLevelOne();
 	} else {
-			
-			// gameEngine.monsters.splice(0, gameEngine.monsters.length);
-			// gameEngine.platforms.splice(0, gameEngine.platforms.length);
 			
 
 			for (var i = 0; i < gameEngine.entities.length; i++) {
@@ -329,7 +362,6 @@ function resetGame() {
 	// alert(gameEngine.shop + " "  + gameEngine.endLevel + " "  + gameEngine.gameOver);
 	if (!gameEngine.shop && !gameEngine.gameOver && !gameEngine.endLevel) {
 		gameEngine.Hero.reset();
-		// alert("hI");
 		Camera.x = 0;
 	} else if (gameEngine.gameOver) {
 		// alert("in game over");
@@ -396,6 +428,7 @@ function startInput() {
 	
 		if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
 			// gameEngine.restartGame = true;
+			Camera.x = 0;
 			gameEngine.startGame = true;
 			resetGame();
 			gameEngine.gameOver = false;

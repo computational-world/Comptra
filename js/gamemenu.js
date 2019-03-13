@@ -9,6 +9,8 @@ function GameShop(game, spritesheet) {
 	this.offset = 50;
 	this.item1 = new ShopItem(game, AM.getAsset("./img/PowerUp/grenade.png"), 410, 95, 35, 35, 0, 2, "Grenade");
 	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 410, 95, 35, 35, 50, 3, "Shield");
+	this.item3 = new ShopItem(game, AM.getAsset("./img/PowerUp/jet.png"), 410, 95, 35, 35, 100, 5, "Missiles");
+	this.item4 = new ShopItem(game, AM.getAsset("./img/bullet2.png"), 410, 95, 35, 35, 150, 3, "x2 Pain");
 	this.items = [];
 	this.addItemToShop();
 	this.pointerY = -25;
@@ -30,6 +32,8 @@ GameShop.prototype.constructor = GameShop;
 GameShop.prototype.addItemToShop = function() {
 	this.items.push(this.item1);
 	this.items.push(this.item2);
+	this.items.push(this.item3);
+	this.items.push(this.item4);
 }
 
 GameShop.prototype.purchaseItem = function() {
@@ -110,6 +114,8 @@ GameShop.prototype.draw = function () {
 		// item one - grenade
 		this.item1.draw();
 		this.item2.draw();
+		this.item3.draw();
+		this.item4.draw();
 	
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 		
