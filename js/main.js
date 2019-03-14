@@ -17,6 +17,9 @@ var heroCheckPoint = {
 	coins: 0,
 	score: 0,
 	specials: [],
+	weapons: [],
+	ammoDouble: 0,
+	ammoThreeWay: 0,
 	airstrikes: 0,
 	grenades: 0
 };
