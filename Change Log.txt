@@ -3,7 +3,12 @@ TO DO:
 	
 	- if checkpoint not reached, still spawn first half of monsters
 	- after reaching checkpoint, save current score and coins, power-ups.  When loading checkpoint, restore these values. 
-	- make song start over, not continue when stopped.
+
+3/13/19
+	Features:
+		- Added checkpoint power-up
+		- Changed main weapon system.  Upgraded weapons will have limited ammo.
+		- Added "loot" drops which are randomized.  If full health, heart will not drop.
 
 3/12/19
 	Features:
