@@ -175,6 +175,7 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/jet.png"), 500, 500 - (0.08 * 333), 825, 333, .08, "airstrike");
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 3350, 200 - (0.07 * 496), 494, 496, 0.07, "coin");
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/shield.png"), 2875, 500 - (0.15 * 256), 256, 256, 0.15, "shield");
+	gameEngine.createPowerUp(AM.getAsset("./img/flag.png"), 4275, 400 - (0.016 * 2491), 1601, 2491, 0.016, "checkpoint");
 
 	// Monsters
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 2150, 350, 50, 50, false, "none");
@@ -201,7 +202,7 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 6150, 250, 50, 50, false, "none");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 6600, 250, 50, 50, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 6600, 250, 50, 50, true, "loot");
 	this.addMonsters(monster);
 	
 	// Boss 1
@@ -226,7 +227,7 @@ GameEngine.prototype.loadLevelOneCheckPoint = function() {
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 6150, 250, 50, 50, false, "none");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 6600, 250, 50, 50, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 6600, 250, 50, 50, true, "loot");
 	this.addMonsters(monster);
 	
 	// Boss 1
@@ -264,7 +265,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 1600, 300, 47, 30, true, "airstrike");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 2450, 500, 50, 50, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 2450, 500, 50, 50, true, "loot");
 	this.addMonsters(monster);
 	
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 3200, 400, 50, 50, false, "");
@@ -291,7 +292,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 6200, 450-81, 140, 108, true, "coin");
 	this.addMonsters(monster);
 	
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "health");
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "loot");
 	this.addMonsters(monster);
 	
 	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 8625, 150, 47, 30, false, "");
@@ -310,6 +311,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 
 /** Load level 2*/
 GameEngine.prototype.loadLevelTwo = function() {
+	
 	
 	// background 
 	gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/L2Background.png"), -200, -180, 928, 792, 1, 50, 25));
@@ -366,7 +368,7 @@ GameEngine.prototype.loadLevelTwo = function() {
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 5450, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 5550, 150 - (0.07 * 512), 512, 512, .07, "grenade");	
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 8250, 150 - (0.07 * 512), 512, 512, .07, "grenade");
-	
+	gameEngine.createPowerUp(AM.getAsset("./img/flag.png"), 7425, 200 - (0.016 * 2491), 1601, 2491, 0.016, "checkpoint");
 	//function(sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
 											//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles)
 	//TilePlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3000, 500, 50, 50, 20)

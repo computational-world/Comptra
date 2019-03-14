@@ -388,18 +388,20 @@ PowerUp
 */
 function PowerUp(game, spritesheet, x, y, width, height, scale, type) {
 	if (type === "shield" || type === "grenade" 
-	|| type === "airstrike" || type === "1up") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
+	|| type === "airstrike" || type === "1up" 
+	|| type === "double" || type === "three-way"
+	|| type === "checkpoint") this.animation = new Animation(spritesheet, width, height, 1, 0.5, 1, true, scale);
 	else if (type === "exit") this.animation = new Animation(spritesheet, width, height, 8, 0.03, 32, true, scale);
 	else this.animation = new Animation(spritesheet, width, height, 8, 0.08, 8, true, scale);
     this.ctx = game.ctx;
 	this.game = game;
     this.spritesheet = spritesheet;
-	this.type = type;
     this.width = width * scale;
     this.height = height * scale;
     this.x = x;
     this.y = y;
 	this.basey = y;
+	this.type = type;
     if (this.type === "exit") this.boundingbox = new BoundingBox(x+40, y+44, this.width/2 - 10, this.height/2);
 	else this.boundingbox = new BoundingBox(x, y, this.width, this.height);
 	this.floatHeight = 10;
@@ -408,6 +410,7 @@ function PowerUp(game, spritesheet, x, y, width, height, scale, type) {
 	this.soundShield = new Sound("audio/shield.wav");
 	this.sound1Up = new Sound("audio/1up.wav");
 	this.soundPowerUp = new Sound("audio/powerup.wav");
+	this.soundCheckpoint = new Sound("audio/checkpoint.wav");
 	this.soundExit = new Sound("audio/exit.wav");
     Entity.call(this, game, x, y, width, height, scale, type);
 }
@@ -423,7 +426,7 @@ PowerUp.prototype.update = function () {
 	duration = duration / this.animation.totalTime;
 		
 	// float effect
-	if (this.type !== "exit") {
+	if (this.type !== "exit" && this.type != "checkpoint") {
 		height = (4 * duration - 4 * duration * duration) * this.floatHeight;
 		this.y = this.basey - height;
 	}
@@ -431,108 +434,170 @@ PowerUp.prototype.update = function () {
     else this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
 	
 	// check for hero collision
-	if (this.type === "health") {
-		if (this.game.Hero.health <= this.game.Hero.maxHealth - 1) {
-			if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
+	if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
+		
+		// health
+		if (this.type === "health") {
+
+			if (this.game.Hero.health <= this.game.Hero.maxHealth - 1) {
+			
 					if (DEBUG) console.log("Hero got " + this.type + " power up!");
 					this.soundHealth.play();
 					this.game.Hero.health++;
 					this.removeFromWorld = true;
-			}	
-		}	
-	}
-	else if (this.type === "1up") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-				if (DEBUG) console.log("Hero got " + this.type + " power up!");
-				this.sound1Up.play();
-				this.game.Hero.lives++;
-				this.removeFromWorld = true;
-		}	
-	}
-	else if (this.type === "coin") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					this.game.Hero.coins++;
-					this.soundCoin.play();
-					this.removeFromWorld = true;
+			}
 		}
-	}
-	else if (this.type === "shield") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					this.game.Hero.shield += 3;
-					this.soundShield.play();
-					this.removeFromWorld = true;
+		// double
+		else if (this.type === "double") {
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.soundPowerUp.play();
+			
+			// no upgraded weapons
+			if (this.game.Hero.weapons.length === 1) {
+				this.game.Hero.weapons.push("double");
+				this.game.Hero.ammoDouble += 10; 
+				this.game.Hero.weaponsIndex++;
+			} 
+			// increment ammo
+			else {
+				for (var i = 0; i < this.game.Hero.weapons.length; i ++) {
+					if (this.game.Hero.weapons[i] === "double") {
+						this.game.Hero.ammoDouble += 10; 
+						break;
+					}
+					if (i === this.game.Hero.weapons.length-1) {
+						this.game.Hero.weapons.push("double");
+					}
+				}
+			}
+		
+			this.removeFromWorld = true;
 		}
-	}
-	else if (this.type === "grenade") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					this.soundPowerUp.play();
-					// no specials
-					if (this.game.Hero.specials.length === 0) {
-						this.game.Hero.specials.push("grenade");
+		// three-way
+		else if (this.type === "three-way") {
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.soundPowerUp.play();
+			
+			// no upgraded weapons
+			if (this.game.Hero.weapons.length === 1) {
+				this.game.Hero.weapons.push("three-way");
+				this.game.Hero.ammoThreeWay += 10; 
+				this.game.Hero.weaponsIndex++;
+			} 
+			// increment ammo
+			else {
+				for (var i = 0; i < this.game.Hero.weapons.length; i ++) {
+					if (this.game.Hero.weapons[i] === "three-way") {
+						this.game.Hero.ammoThreeWay += 10; 
+						break;
+					}
+					if (i === this.game.Hero.weapons.length-1) {
+						this.game.Hero.weapons.push("three-way");
+					}
+				}
+			}
+			this.removeFromWorld = true;
+		}
+		else if (this.type === "1up") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.sound1Up.play();
+			this.game.Hero.lives++;
+			this.removeFromWorld = true;
+			
+		}
+		else if (this.type === "coin") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.game.Hero.coins++;
+			this.soundCoin.play();
+			this.removeFromWorld = true;
+			
+		}
+		else if (this.type === "shield") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.game.Hero.shield += 3;
+			this.soundShield.play();
+			this.removeFromWorld = true;
+			
+		}
+		else if (this.type === "grenade") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.soundPowerUp.play();
+			// no specials
+			if (this.game.Hero.specials.length === 0) {
+				this.game.Hero.specials.push("grenade");
+				this.game.Hero.grenades++; 
+			} 
+			// increment grenades
+			else {
+				for (var i = 0; i < this.game.Hero.specials.length; i ++) {
+					if (this.game.Hero.specials[i] === "grenade") {
 						this.game.Hero.grenades++; 
-					} 
-					// increment grenades
-					else {
-						for (var i = 0; i < this.game.Hero.specials.length; i ++) {
-							if (this.game.Hero.specials[i] === "grenade") {
-								this.game.Hero.grenades++; 
-								break;
-							}
-							if (i === this.game.Hero.specials.length-1) {
-								this.game.Hero.specials.push("grenade");
-							}
-						}
+						break;
 					}
-				
-					this.removeFromWorld = true;
-					
-		}
-	}	
-	else if (this.type === "airstrike") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-					if (DEBUG) console.log("Hero got " + this.type + " power up!");
-					this.soundPowerUp.play();
-					// no specials
-					if (this.game.Hero.specials.length === 0) {
-						this.game.Hero.specials.push("airstrike");
+					if (i === this.game.Hero.specials.length-1) {
+						this.game.Hero.specials.push("grenade");
+					}
+				}
+			}
+		
+			this.removeFromWorld = true;
+						
+			
+		}	
+		else if (this.type === "airstrike") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");
+			this.soundPowerUp.play();
+			// no specials
+			if (this.game.Hero.specials.length === 0) {
+				this.game.Hero.specials.push("airstrike");
+				this.game.Hero.airstrikes++; 
+			} 
+			// increment airstrikes
+			else {
+				alert("in here");
+				for (var i = 0; i < this.game.Hero.specials.length; i ++) {
+					if (this.game.Hero.specials[i] === "airstrike") {
 						this.game.Hero.airstrikes++; 
-					} 
-					// increment airstrikes
-					else {
-						alert("in here");
-						for (var i = 0; i < this.game.Hero.specials.length; i ++) {
-							if (this.game.Hero.specials[i] === "airstrike") {
-								this.game.Hero.airstrikes++; 
-								break;
-							}
-							if (i === this.game.Hero.specials.length-1) {
-								this.game.Hero.specials.push("airstrike");
-							}
-						}
+						break;
 					}
-				
-					this.removeFromWorld = true;
-					
+					if (i === this.game.Hero.specials.length-1) {
+						this.game.Hero.specials.push("airstrike");
+					}
+				}
+			}
+		
+			this.removeFromWorld = true;
+						
+			
+		}	
+		else if (this.type === "exit") {
+
+			if (DEBUG) console.log("Hero got " + this.type + " power up!");			
+			this.soundExit.play();
+			this.removeFromWorld = true;
+			this.game.level++;
+			// this.game.Hero.removeFromWorld = true;
+			this.game.Hero.visible = false;
+			this.game.shop = true;
+			this.game.checkPoint = false;
+			this.game.endLevel = true;
+			soundSong.stop();
+			soundShopTheme.play();
+			resetGame();
+			
 		}
-	}	
-	else if (this.type === "exit") {
-		if (this.boundingbox.collide(this.game.Hero.boundingbox)) {
-					if (DEBUG) console.log("Hero got " + this.type + " power up!");			
-					this.soundExit.play();
-					this.removeFromWorld = true;
-					this.game.level++;
-					// this.game.Hero.removeFromWorld = true;
-					this.game.Hero.visible = false;
-					this.game.shop = true;
-					this.game.checkPoint = false;
-					this.game.endLevel = true;
-					soundSong.stop();
-					soundShopTheme.play();
-					resetGame();
+		else if (this.type === "checkpoint") {
+			// ADD CODE HERE TO MAKE THIS LOCATION THE CHECKPOINT
+			
+			this.soundCheckpoint.play();
+			this.removeFromWorld = true;
 		}
+		
 	}
 		
 	Entity.prototype.update.call(this);
@@ -552,7 +617,6 @@ PowerUp.prototype.draw = function () {
     
     Entity.prototype.draw.call(this);
 }
-
 
 /*
 Flying Robot
@@ -888,8 +952,6 @@ AimTurret.prototype.draw = function () {
     }
 }
 
-
-
 /*
 Mech
 */
@@ -1049,7 +1111,6 @@ Mech.prototype.draw = function () {
         this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
     }
 }
-
 
 /*
 Boss 1
@@ -1567,6 +1628,8 @@ function Soldier(game, spritesheet, x, y) {
 	this.specialsIndex = 0;
 	this.grenades = 0;
 	this.airstrikes = 0;
+	this.ammoDouble = 0;
+	this.ammoThreeWay = 0;
 	this.specials = [];
 	this.currentSpecial = "";
 	this.lives = 3;
@@ -1626,7 +1689,11 @@ Soldier.prototype.update = function () {
 	
 	if (this.specials.length > 0) this.currentSpecial = this.specials[this.specialsIndex];
 	else this.currentSpecial = "";
-	//if (this.specialsIndex < 0) this.specialsIndex = 0;
+
+	if (this.weapons.length > 1) this.weapon = this.weapons[this.weaponsIndex];
+	else this.weapon = "basic";
+	if (this.weapon === "double") this.weaponDamage = 2;
+	else this.weaponDamage = 1;
 	
 	if (this.game.level === 1 && check_point_x.level1 - this.x < 405) {
 		if (!this.game.checkPoint) {
@@ -1783,7 +1850,20 @@ Soldier.prototype.update = function () {
 			this.game.addEntity(bullet);
 			this.game.bullets.push(bullet);
 			
+			if (this.weapon === "double") {
+				this.ammoDouble--;
+					
+					// no more ammo
+					if (this.ammoDouble <= 0 ) {
+						
+						this.weapon = this.weapon[this.weaponsIndex-1];
+						this.weapons.splice(this.weaponsIndex, 1);
+						if (this.weaponsIndex === this.weapons.length && this.weapons.length > 0) this.weaponsIndex -= 1;
+					}
+			}
+			
 			if (this.weapon === "three-way") {
+				this.ammoThreeWay--;
 				var bullet = new Bullet(this.game, AM.getAsset("./img/bullet.png"), this.x + compensate, this.y + compensateY, this.direction, -1);
 				this.game.addEntity(bullet);
 				this.game.bullets.push(bullet);
@@ -1791,6 +1871,14 @@ Soldier.prototype.update = function () {
 				var bullet = new Bullet(this.game, AM.getAsset("./img/bullet.png"), this.x + compensate, this.y + compensateY, this.direction, 1);
 				this.game.addEntity(bullet);
 				this.game.bullets.push(bullet);
+				
+				// no more ammo
+				if (this.ammoThreeWay <= 0 ) {
+					
+					this.weapon = this.weapon[this.weaponsIndex-1];
+					this.weapons.splice(this.weaponsIndex, 1);
+					if (this.weaponsIndex === this.weapons.length && this.weapons.length > 0) this.weaponsIndex -= 1;
+				}
 			}
 			this.shootElapsedTime = 0; 
 		} 
@@ -2066,8 +2154,7 @@ Soldier.prototype.drawUI = function () {
 	this.ctx.lineWidth = 2;
 	this.ctx.strokeText("x"+this.lives, 40, 50);
 	this.ctx.fillStyle = "white";
-	this.ctx.fillText("x"+this.lives, 40, 50);
-			
+	this.ctx.fillText("x"+this.lives, 40, 50);	
 	this.ctx.lineWidth = 1;
 	this.ctx.font = "bold 30px Arial";
     // Health
@@ -2101,15 +2188,30 @@ Soldier.prototype.drawUI = function () {
 	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 145, 0, 148, 106, 0, 50, 79, 53);
 	this.ctx.drawImage(AM.getAsset("./img/weaponBackground.png"), 0, 0, 148, 106, 80, 50, 79, 53);
 	if (this.weapon === "basic") this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
-	else if (this.weapon === "double") this.ctx.drawImage(AM.getAsset("./img/bullet2.png"), 0, 0, 14, 14, 20, 55, 42, 42);
+	else if (this.weapon === "double") {
+		this.ctx.drawImage(AM.getAsset("./img/bullet2.png"), 0, 0, 14, 14, 20, 55, 42, 42);
 	
-	else if (this.weapon === "three-way") {
-		if (this.weaponDamage === 1) this.ctx.drawImage(AM.getAsset("./img/bullet.png"), 0, 0, 14, 14, 20, 55, 42, 42);
-		else this.ctx.drawImage(AM.getAsset("./img/bullet2.png"), 0, 0, 14, 14, 20, 55, 42, 42);
-		
 		this.ctx.font = "bold 15px Arial";
-		this.ctx.fillText("x"+this.lives, 52, 92);
+		this.ctx.lineWidth = 2;
+		this.ctx.strokeText("x"+this.ammoDouble, 52, 92);
+		this.ctx.fillStyle = "white";
+		this.ctx.fillText("x"+this.ammoDouble, 52, 92);
+		this.ctx.lineWidth = 1;
 		this.ctx.font = "bold 30px Arial";
+	
+	}
+	else if (this.weapon === "three-way") {
+		
+		this.ctx.drawImage(AM.getAsset("./img/PowerUp/three-way.png"), 0, 0, 27, 19, 13, 58, 54, 38);
+
+		this.ctx.font = "bold 15px Arial";
+		this.ctx.lineWidth = 2;
+		this.ctx.strokeText("x"+this.ammoThreeWay, 52, 92);
+		this.ctx.fillStyle = "white";
+		this.ctx.fillText("x"+this.ammoThreeWay, 52, 92);
+		this.ctx.lineWidth = 1;
+		this.ctx.font = "bold 30px Arial";
+	
 	}
 	
 	if (this.specials.length > 0) {

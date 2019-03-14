@@ -48,27 +48,66 @@ soundShopTheme.sound.volume = 0.4;
 var soundGameOver = new Sound("audio/gameover.mp3");
 
 function dropPowerUp(entity) {
-	if (entity.powerUpType === "shield") {
-		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/shield.png"), entity.x, entity.boundingbox.bottom - 38, 256, 256, 0.15, "shield");
+	var type = entity.powerUpType;
+	if (type === "loot") type = this.loot();
+	
+	if (type === "shield") {
+		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/shield.png"), entity.x, entity.boundingbox.bottom - 38, 256, 256, 0.15, "loot");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
-	} else if (entity.powerUpType === "health") {
+	} else if (type === "double") {
+		power = new PowerUp(entity.game, AM.getAsset("./img/bullet2.png"), entity.x, entity.boundingbox.bottom - 35, 14, 14, 2.5, "double");
+		entity.game.addEntity(power);
+		entity.game.powerups.push(power);
+	} else if (type === "three-way") {
+		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/three-way.png"), entity.x, entity.boundingbox.bottom - 34, 27, 19, 1.8, "three-way");
+		entity.game.addEntity(power);
+		entity.game.powerups.push(power);
+	} else if (type === "health") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/health.png"), entity.x, entity.boundingbox.bottom - 35, 494, 443, 0.08, "health");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
-	} else if (entity.powerUpType === "coin") {
+	} else if (type === "coin") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/coin.png"), entity.x, entity.boundingbox.bottom - 35, 494, 496, 0.07, "coin");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
-	} else if (entity.powerUpType === "airstrike") {
+	} else if (type === "airstrike") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/jet.png"), entity.x, entity.boundingbox.bottom - (0.08 * 333), 825, 333, .08, "airstrike");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);	
-	} else if (entity.powerUpType === "exit") {
+	} else if (type === "exit") {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/exit.png"), entity.exitX, entity.exitY, 128, 128, 1, "exit");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
 	}
+}
+
+function loot() {
+	var chance = Math.random();
+	var loot = "";	
+	var valid = false;
+	
+	while (valid === false) {
+		valid = true;
+		// health
+		if (chance <= .33) {
+			loot = "health";
+			
+			// if full health reroll
+			if (gameEngine.Hero.health === gameEngine.Hero.maxHealth) {
+				valid = false;
+				chance = Math.random();
+			}
+		// double
+		} else if (chance > .33 && chance <= .66) {
+			loot = "double";
+		// three-way
+		} else {
+			loot = "three-way";
+		}
+	}
+
+	return loot;
 }
 	
 function Animation(spriteSheet, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
@@ -185,7 +224,9 @@ AM.queueDownload("./img/L2Background.png");
 AM.queueDownload("./img/enemies.png");
 AM.queueDownload("./img/woods.png");
 AM.queueDownload("./img/Boss2.png");
+AM.queueDownload("./img/flag.png");
 AM.queueDownload("./img/bat.png");
+
 
 // powerups
 AM.queueDownload("./img/PowerUp/health.png");
@@ -196,6 +237,7 @@ AM.queueDownload("./img/PowerUp/grenade.png");
 AM.queueDownload("./img/PowerUp/exit.png");
 AM.queueDownload("./img/PowerUp/jet.png");
 AM.queueDownload("./img/PowerUp/missile.png");
+AM.queueDownload("./img/PowerUp/three-way.png");
 
 
 AM.downloadAll(function () {
@@ -611,9 +653,9 @@ function startInput() {
 			// "/" cheat code: warp
 			case 190:
 				if (gameEngine.level === 1) {
-					gameEngine.Hero.x = 7000;
+					gameEngine.Hero.x = 6500;
 					gameEngine.Hero.y = 200;
-					Camera.x = 6600;
+					Camera.x = 6100;
 				} else if (gameEngine.level === 2) {
 					gameEngine.Hero.x = 10000;
 					gameEngine.Hero.y = 100;
