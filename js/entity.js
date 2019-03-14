@@ -502,7 +502,7 @@ PowerUp.prototype.update = function () {
 
 			if (DEBUG) console.log("Hero got " + this.type + " power up!");
 			this.sound1Up.play();
-			this.game.Hero.lives++;
+			if(this.game.Hero.lives < 3) this.game.Hero.lives++;
 			this.removeFromWorld = true;
 			
 		}
@@ -581,7 +581,7 @@ PowerUp.prototype.update = function () {
 			this.soundExit.play();
 			this.removeFromWorld = true;
 			this.game.level++;
-			// this.game.Hero.removeFromWorld = true;
+			resetHeroCheckPoint();
 			this.game.Hero.visible = false;
 			this.game.shop = true;
 			this.game.checkPoint = false;
@@ -593,9 +593,24 @@ PowerUp.prototype.update = function () {
 		}
 		else if (this.type === "checkpoint") {
 			// ADD CODE HERE TO MAKE THIS LOCATION THE CHECKPOINT
-			
 			this.soundCheckpoint.play();
 			this.removeFromWorld = true;
+			if (!this.game.checkPoint) {
+				heroCheckPoint.x = this.game.Hero.x;
+				heroCheckPoint.y = this.game.Hero.y;
+				heroCheckPoint.cameraX = Camera.x;
+				heroCheckPoint.coins = this.game.Hero.coins;
+				heroCheckPoint.score = this.game.Hero.score;
+				heroCheckPoint.specials = this.game.Hero.specials;
+				heroCheckPoint.airstrikes = this.game.Hero.airstrikes;
+				heroCheckPoint.grenades = this.game.Hero.grenades;
+				heroCheckPoint.weapons = this.game.Hero.weapons;
+				heroCheckPoint.ammoDouble = this.game.Hero.ammoDouble;
+				heroCheckPoint.ammoThreeWay = this.game.Hero.ammoThreeWay;
+				
+			}
+			this.game.checkPoint = true;
+			// this.removeFromWorld = true;
 		}
 		
 	}
@@ -903,7 +918,7 @@ AimTurret.prototype.update = function () {
 					this.animation.elapsedTime = 0;
 					this.shooting = false;
 					
-					var bullet = new Cannonball(this.game, this.x - 7, this.y + 29, -1);
+					var bullet = new AimCannonball(this.game, this.x - 7, this.y + 29, -1);
 					this.game.addEntity(bullet);
 					this.game.bulletsBad.push(bullet);
 					
@@ -951,6 +966,109 @@ AimTurret.prototype.draw = function () {
         this.ctx.strokeRect(this.boundingbox.left - Camera.x, this.boundingbox.top, this.boundingbox.width, this.boundingbox.height);
     }
 }
+
+
+/*
+Aim/Smart Cannonball
+*/
+function AimCannonball(game, x, y, direction) {
+    this.animation = new CustomAnimation(AM.getAsset("./img/robots.png"), 162, 187, 0, 6, 6, 1, 1, 1, true, 2);
+    this.animationExplosion = new CustomAnimation(AM.getAsset("./img/explosions.png"), 641, 367, 5, 15, 15, 6, .05, 6, false, 1);
+    this.speed = 250;
+    this.ctx = game.ctx;
+	this.game = game;
+    this.x = x;
+    this.y = y;
+	this.xVelocity = 0;
+	this.yVelocity = 0
+	this.calculateVelocity();
+	this.width = 12;
+	this.height = 12;
+	this.startX = x;
+	this.direction = direction;
+	this.hit = false;
+	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    Entity.call(this, game, this.x, this.y);
+}
+
+AimCannonball.prototype = new Entity();
+AimCannonball.prototype.constructor = AimCannonball;
+
+AimCannonball.prototype.calculateVelocity = function() {
+	var x = Math.abs(this.game.Hero.x - this.x);
+	var y = Math.abs(this.game.Hero.y - this.y);
+	var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	
+	if (this.game.Hero.x < this.x && this.game.Hero.y > this.y) { // turret above, and right to hero
+		this.xVelocity = (this.x - this.game.Hero.x) / distance; 
+		this.yVelocity = (this.game.Hero.y - this.y) / distance;
+		this.leftDiagonalShoot = true; 
+	} else if (this.x < this.game.Hero.x && this.game.Hero.y > this.y) {
+		this.xVelocity = (this.game.Hero.x - this.x) / distance; 
+		this.yVelocity = (this.game.Hero.y - this.y) / distance;
+		this.rightDiagonalShoot = true; 
+	} else if (this.game.Hero.x > this.x) {
+		this.xVelocity = (this.game.Hero.x - this.x) / distance; 
+		this.rightShoot = true;
+	} else if (this.game.Hero.x < this.x) {
+		this.xVelocity = (this.x - this.game.Hero.x) / distance; 
+		this.leftShoot = true;
+	}
+	
+	
+}
+
+AimCannonball.prototype.update = function () {
+	if (!this.hit) {
+		if (this.leftDiagonalShoot) {
+			this.x -= this.xVelocity * this.game.clockTick * this.speed;
+			this.y += this.yVelocity * this.game.clockTick * this.speed;			
+		} else if (this.rightDiagonalShoot) {
+			this.x += this.xVelocity * this.game.clockTick * this.speed;
+			this.y += this.yVelocity * this.game.clockTick * this.speed;
+		} else if (this.leftShoot) {
+			this.x -= this.xVelocity * this.game.clockTick * this.speed;
+		} else if (this.rightShoot) {
+			this.x += this.xVelocity * this.game.clockTick * this.speed;
+		}
+		
+		// alert(this.x +  " " + this.y);
+		// this.x += this.game.clockTick * this.speed * this.direction;
+		this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+		
+		var distance = Math.abs(this.x - this.startX);
+		if (distance > 900) {
+			if (DEBUG) console.log("Cannonball removed.");	
+			for( var i = 0; i < this.game.bulletsBad.length; i++){ 
+				if ( this.game.bulletsBad[i] === this) {
+					this.game.bulletsBad.splice(i, 1); 
+					this.removeFromWorld = true;
+				}
+			}
+		}
+    }
+	
+    Entity.prototype.update.call(this);
+}
+
+AimCannonball.prototype.draw = function () {
+	if (this.hit) {
+		this.animationExplosion.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+		if (this.animationExplosion.isDone()) {
+			for( var i = 0; i < this.game.bulletsBad.length; i++){ 
+				if ( this.game.bulletsBad[i] === this) {
+					this.game.bulletsBad.splice(i, 1);
+					this.removeFromWorld = true;
+				}
+			}	
+		}
+		
+	}
+    else this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+    Entity.prototype.draw.call(this);
+}
+
+
 
 /*
 Mech
@@ -1695,48 +1813,20 @@ Soldier.prototype.update = function () {
 	if (this.weapon === "double") this.weaponDamage = 2;
 	else this.weaponDamage = 1;
 	
-	if (this.game.level === 1 && check_point_x.level1 - this.x < 405) {
-		if (!this.game.checkPoint) {
-			// alert("hi");
-			heroCheckPoint.x = this.game.Hero.x;
-			heroCheckPoint.y = this.game.Hero.y;
-			heroCheckPoint.cameraX = Camera.x;
-			heroCheckPoint.coins = this.coins;
-			heroCheckPoint.score = 0;
-			heroCheckPoint.specials = this.specials;
-			heroCheckPoint.airstrikes = this.airstrikes;
-			heroCheckPoint.grenades = this.grenades;
-			
-		}
-		this.game.checkPoint = true;
-	
-	}
-	
 	
 	if (this.health <= 0) {
 		
 		this.lives--;
 		this.health = this.maxHealth;
 		if (this.lives > 0) loadCheckPoint();
-		// if (this.game.checkPoint && this.lives > 0) loadCheckPoint();
-		// else {
-			
-			// this.coins = heroCheckPoint.coins;
-			// this.specials = heroCheckPoint.specials;
-			// this.score = heroCheckPoint.score;
-			// this.x = 200;
-			// this.y = 0;
-			// Camera.x = 0;
-			// Camera.lock = false;
-			// this.falling = true;
-			
-		// }
+		
 	}
 	
 	
 	if (this.lives <= 0) {
 		soundGameOver.play();
 		this.game.gameOver = true;
+		this.game.level = 1;
 		resetGame();
 		this.game.checkPoint = false;
 		this.removeFromWorld = true;
