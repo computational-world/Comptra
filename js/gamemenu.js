@@ -250,18 +250,29 @@ GameMenu.prototype.addButtons = function() {
 	this.buttons.push(gameEngine.settingButton);
 	this.buttons.push(gameEngine.creditButton);
 	this.buttons.push(gameEngine.gobackButton);
+	// this.buttons.push(gameEngine.playAgainButton);
 }
 
 GameMenu.prototype.select = function() {
+	
 	for (var i = 0; i < this.buttons.length; i++) {
 		var button = this.buttons[i];
+		// alert(i);
 		if (button.offset + this.boundedTop === this.basey) {
 			if (button instanceof PlayButton) {
-				startGame();
-				gameEngine.startGame = true;
-				gameEngine.showSetting = false;
-				gameEngine.showCredit = false;
-
+				if (gameEngine.gameOver) {
+					Camera.x = 0;
+					gameEngine.startGame = true;
+					resetGame();
+					gameEngine.gameOver = false;
+					startGame();
+				} else {
+					
+					startGame();
+					gameEngine.startGame = true;
+					gameEngine.showSetting = false;
+					gameEngine.showCredit = false;
+				}
 				break;
 			} else if (button instanceof SettingButton) {
 				gameEngine.showSetting = true;
@@ -314,16 +325,37 @@ GameMenu.prototype.update = function () {
 }
 
 GameMenu.prototype.draw = function() {
-	if (!this.game.startGame & !this.game.showSetting && !this.game.showCredit) {
+	if ((!this.game.startGame || this.game.gameOver) && !this.game.showSetting && !this.game.showCredit) {
 		// this.resetPointerPos();
 		// start button
-		this.ctx.fillStyle = "#C0C0C0";
-		roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
-									this.game.playButton.height, 5, true, true);
-		this.ctx.fillStyle = "#FFFFFF";
-		this.ctx.font = "25px Verdana";
-		this.ctx.fillText("START", 355, 325);
-		
+		if (this.game.gameOver) {
+			
+			this.ctx.font = "30px Verdana";
+			this.ctx.shadowColor = "black";
+			this.ctx.shadowBlur = 7;
+			this.ctx.lineWidth = 5;
+			this.ctx.strokeText("Game Over", 320, 250);
+			this.ctx.shadowBlur = 0;
+			this.ctx.fillStyle = "white";
+			this.ctx.fillText("Game Over", 320, 250);
+			
+			this.ctx.lineWidth = 1;
+			this.ctx.fillStyle = "#C0C0C0";
+			roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
+										this.game.playButton.height, 5, true, true);
+			this.ctx.fillStyle = "#FFFFFF";
+			this.ctx.font = "25px Verdana";
+			this.ctx.fillText("RESTART", 340, 325);
+		} else {
+			
+			this.ctx.fillStyle = "#C0C0C0";
+			roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
+										this.game.playButton.height, 5, true, true);
+			this.ctx.fillStyle = "#FFFFFF";
+			this.ctx.font = "25px Verdana";
+			this.ctx.fillText("START", 355, 325);
+			
+		}
 		// setting button
 		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, this.game.settingButton.x, this.game.settingButton.y, this.game.settingButton.width, 
@@ -378,26 +410,27 @@ GameMenu.prototype.draw = function() {
 		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.fillText("Go Back", 360, 422);
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
-	} else if (this.game.gameOver) {
+	} 
+	// else if (this.game.gameOver) {
 		
-		this.ctx.font = "30px Verdana";
-		this.ctx.shadowColor = "black";
-		this.ctx.shadowBlur = 7;
-		this.ctx.lineWidth = 5;
-		this.ctx.strokeText("Game Over", 340, 250);
-		this.ctx.shadowBlur = 0;
-		this.ctx.fillStyle = "white";
-		this.ctx.fillText("Game Over", 340, 250);
+		// this.ctx.font = "30px Verdana";
+		// this.ctx.shadowColor = "black";
+		// this.ctx.shadowBlur = 7;
+		// this.ctx.lineWidth = 5;
+		// this.ctx.strokeText("Game Over", 340, 250);
+		// this.ctx.shadowBlur = 0;
+		// this.ctx.fillStyle = "white";
+		// this.ctx.fillText("Game Over", 340, 250);
 		
-		this.ctx.lineWidth = 1;
-		this.ctx.fillStyle = "#6AE1F5";
-		roundRect(this.ctx, this.game.playAgainButton.x, this.game.playAgainButton.y, this.game.playAgainButton.width, 
-									this.game.playAgainButton.height, 5, true, true);
+		// this.ctx.lineWidth = 1;
+		// this.ctx.fillStyle = "#6AE1F5";
+		// roundRect(this.ctx, this.game.playAgainButton.x, this.game.playAgainButton.y, this.game.playAgainButton.width, 
+									// this.game.playAgainButton.height, 5, true, true);
 	
-		this.ctx.fillStyle = "#DAFEFF";
-		this.ctx.font = "25px Verdana";
-		this.ctx.fillText("Play Again", 360, 325);	
-	}
+		// this.ctx.fillStyle = "#DAFEFF";
+		// this.ctx.font = "25px Verdana";
+		// this.ctx.fillText("Play Again", 360, 325);	
+	// }
 }
 
 
@@ -446,18 +479,19 @@ CreditButton.prototype.isClick = function(pos) {
 }
 
 
-/** Play Again button class.*/
-function PlayAgainButton(x, y, width, height) {
-	this.x = x;
-	this.y = y;
-	this.width = width;
-	this.height = height;
-	this.boundingbox = new BoundingBox(x, y, width, height);
-}
+// /** Play Again button class.*/
+// function PlayAgainButton(x, y, width, height) {
+	// this.x = x;
+	// this.y = y;
+	// this.width = width;
+	// this.height = height;
+	// this.offset = 0;
+	// this.boundingbox = new BoundingBox(x, y, width, height);
+// }
 
-PlayAgainButton.prototype.isClick = function(pos) {
-    return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
-}
+// PlayAgainButton.prototype.isClick = function(pos) {
+    // return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
+// }
 
 /** Go Back button class.*/
 function GoBackButton(x, y, width, height) {
