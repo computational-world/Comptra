@@ -22,6 +22,8 @@ var heroCheckPoint = {
 	ammoThreeWay: 0,
 	airstrikes: 0,
 	grenades: 0,
+	weaponsIndex: 0,
+	specialsIndex: 0
 };
 
 
@@ -82,6 +84,7 @@ function dropPowerUp(entity) {
 		power = new PowerUp(entity.game, AM.getAsset("./img/PowerUp/exit.png"), entity.exitX, entity.exitY, 128, 128, 1, "exit");
 		entity.game.addEntity(power);
 		entity.game.powerups.push(power);
+		
 	}
 }
 
@@ -321,10 +324,12 @@ function loadCheckPoint() {
 			gameEngine.Hero.y = 0;
 			gameEngine.Hero.falling = true;
 			gameEngine.Hero.coins = heroCheckPoint.coins;
-			gameEngine.Hero.specials = heroCheckPoint.specials;
+			gameEngine.Hero.weaponsIndex = heroCheckPoint.weaponsIndex;
+			gameEngine.Hero.specialsIndex = heroCheckPoint.specialsIndex;
+			gameEngine.Hero.specials = Array.from(heroCheckPoint.specials);
 			gameEngine.Hero.ammoDouble = heroCheckPoint.ammoDouble;
 			gameEngine.Hero.ammoThreeWay = heroCheckPoint.ammoThreeWay;
-			gameEngine.Hero.weapons = heroCheckPoint.weapons;
+			gameEngine.Hero.weapons = Array.from(heroCheckPoint.weapons);
 			gameEngine.Hero.airstrikes = heroCheckPoint.airstrikes;
 			gameEngine.Hero.grenades = heroCheckPoint.grenades;
 			gameEngine.Hero.score = heroCheckPoint.score;
@@ -341,24 +346,32 @@ function loadCheckPoint() {
 			gameEngine.addEntity(gameEngine.Hero);
 		}
 	} else {
-		
-		if (gameEngine.level === 1) {
-			
 			hero.x = heroCheckPoint.x;
 			hero.y = 0;
 			hero.coins = heroCheckPoint.coins;
-			hero.specials = heroCheckPoint.specials;
+			hero.specials =  Array.from(heroCheckPoint.specials);
 			hero.airstrikes = heroCheckPoint.airstrikes;
-			hero.grenades = heroCheckPoint.grenades;
+			hero.grenades =heroCheckPoint.grenades;
 			hero.score = heroCheckPoint.score; 
+			hero.ammoDouble = heroCheckPoint.ammoDouble;
+			hero.ammoThreeWay = heroCheckPoint.ammoThreeWay;
+			hero.weapons = Array.from(heroCheckPoint.weapons);
 			hero.falling = true;
-			
 			Camera.x = heroCheckPoint.cameraX;
+			
+		
+		if (gameEngine.level === 1) {
+		
 			gameEngine.createLevelOneMap();
 			gameEngine.loadLevelOneCheckPoint();
-			gameEngine.Hero = hero;
-			gameEngine.addEntity(gameEngine.Hero);
+			
+		} else if (this.gameEngine.level === 2) {
+		
+			gameEngine.createLevelTwoMap();
+			gameEngine.loadLevelTwoCheckPoint();
 		}
+		gameEngine.Hero = hero;
+		gameEngine.addEntity(gameEngine.Hero);
 	}
 	
 	alert("Loading CheckPoint");
@@ -381,16 +394,17 @@ function startGame() {
 		gameEngine.loadLevelOne();
 	} else {
 			
-
-			for (var i = 0; i < gameEngine.entities.length; i++) {
-				var entity = gameEngine.entities[i];
-				if (entity instanceof Soldier || 
-					entity instanceof GameMenu ||
-					entity instanceof GameShop) {
-						continue;
-				}
-				gameEngine.entities.splice(i, 1);
+		// alert(gameEngine.powerups);
+		// alert(gameEngine.Hero.weapons);
+		for (var i = 0; i < gameEngine.entities.length; i++) {
+			var entity = gameEngine.entities[i];
+			if (entity instanceof Soldier || 
+				entity instanceof GameMenu ||
+				entity instanceof GameShop) {
+					continue;
 			}
+			gameEngine.entities.splice(i, 1);
+		}
 			
 		gameEngine.loadLevelTwo();
 		var hero;
@@ -419,11 +433,9 @@ function resetGame() {
 		gameEngine.Hero.reset();
 		Camera.x = 0;
 	} else if (gameEngine.gameOver) {
-		// alert("in game over");
 		gameEngine.createHero();
 		
 	} else if (gameEngine.endLevel) {
-		// alert("in end level");
 		gameEngine.Hero.x = 200;
 		gameEngine.Hero.y = 0;
 		gameEngine.checkPoint = false;
@@ -434,6 +446,7 @@ function resetGame() {
 	
 	gameEngine.monsters.splice(0, gameEngine.monsters.length);
 	gameEngine.platforms.splice(0, gameEngine.platforms.length);
+	gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
 			
 	
 	for (var i = 0; i < gameEngine.entities.length; i++) {
@@ -500,6 +513,7 @@ function startInput() {
 			gameEngine.showSetting = false;
 			gameEngine.startGame = false;
 			gameEngine.showCredit = false;
+			gameMenu.resetPointerPos();
 		}
 	
 		if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
@@ -559,6 +573,14 @@ function startInput() {
 					
 					gameMenu.select();
 					
+						
+					break;
+			}
+		} else if (gameEngine.showSetting || gameEngine.showCredit) {
+			switch(e.keyCode) {
+				case 13: // purchase item
+					
+					gameMenu.select();
 						
 					break;
 			}

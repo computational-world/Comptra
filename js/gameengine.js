@@ -215,8 +215,8 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 
 /** Load Level One Check Point.*/
 GameEngine.prototype.loadLevelOneCheckPoint = function() {
-	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 4000, 500-81, 140, 108, true, "coin");
-	this.addMonsters(monster);
+	// monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 4000, 500-81, 140, 108, true, "coin");
+	// this.addMonsters(monster);
 	
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 4850, 350, 50, 50, false, "none");
 	this.addMonsters(monster);
@@ -231,11 +231,29 @@ GameEngine.prototype.loadLevelOneCheckPoint = function() {
 	this.addMonsters(monster);
 	
 	// Boss 1
-	var Boss = new Boss1(gameEngine, AM.getAsset("./img/mechs.png"), 7350, 550-81, 140, 108, 5, true, "exit");
+	var Boss = new Boss1(gameEngine, AM.getAsset("./img/mechs.png"), 7350, 550-81, 140, 108, true, "exit");
 	this.addMonsters(Boss);
 }
 
 
+/** Load Level One Check Point.*/
+GameEngine.prototype.loadLevelTwoCheckPoint = function() {
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "loot");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 8625, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 9025, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 9050, 350-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+	
+	// Boss 2
+	var Boss = new Boss2(gameEngine, AM.getAsset("./img/Boss2.png"), 10670, 370, 87, 110, 2, true, "exit");
+	this.addMonsters(Boss);
+}
 /** Add monsters to the world.*/
 GameEngine.prototype.addMonsters = function(monster) {
 	this.addEntity(monster);
@@ -253,6 +271,14 @@ GameEngine.prototype.loadLevelOne = function() {
 }
 
 GameEngine.prototype.createLevelTwoMonsters = function() {
+	
+	// powerups
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 4950, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
+	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 5450, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 5550, 150 - (0.07 * 512), 512, 512, .07, "grenade");	
+	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 8250, 150 - (0.07 * 512), 512, 512, .07, "grenade");
+	gameEngine.createPowerUp(AM.getAsset("./img/flag.png"), 7425, 200 - (0.016 * 2491), 1601, 2491, 0.016, "checkpoint");
+	
 	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 1000, 500, 50, 50, false, "");
 	this.addMonsters(monster);
 	
@@ -309,10 +335,7 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	this.addMonsters(Boss);
 }
 
-/** Load level 2*/
-GameEngine.prototype.loadLevelTwo = function() {
-	
-	
+GameEngine.prototype.createLevelTwoMap = function() {
 	// background 
 	gameEngine.addEntity(new Background(gameEngine, AM.getAsset("./img/L2Background.png"), -200, -180, 928, 792, 1, 50, 25));
 	
@@ -363,16 +386,6 @@ GameEngine.prototype.loadLevelTwo = function() {
 	this.createTile(AM.getAsset("./img/woods.png"), 82, 1030, 24, 32, 6650, 550 - 32, 1, 1);
 	this.createTile(AM.getAsset("./img/woods.png"), 82, 1030, 24, 32, 3250, 450 - 32, 1, 1);
 	
-	// powerups
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 4950, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
-	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 5450, 150 - (0.07 * 496), 494, 496, 0.07, "coin");
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 5550, 150 - (0.07 * 512), 512, 512, .07, "grenade");	
-	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 8250, 150 - (0.07 * 512), 512, 512, .07, "grenade");
-	gameEngine.createPowerUp(AM.getAsset("./img/flag.png"), 7425, 200 - (0.016 * 2491), 1601, 2491, 0.016, "checkpoint");
-	//function(sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
-											//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles)
-	//TilePlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3000, 500, 50, 50, 20)
-	
 	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1500, 350, 50, 50, 5);
 	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 1850, 450, 50, 50, 5);
 	this.createTilePlatform(19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 0, 550, 50, 50, 50);
@@ -420,11 +433,24 @@ GameEngine.prototype.loadLevelTwo = function() {
 	this.addEntity(pf);
 	this.platforms.push(pf);
 	this.movplatforms.push(pf);
-	
-	gameEngine.createLevelTwoMonsters();
-	
 	// water
 	this.createTile(AM.getAsset("./img/ForestTiles.png"), 372, 788, 50, 50, 0, 600, 230, 2);
+	
+}
+
+/** Load level 2*/
+GameEngine.prototype.loadLevelTwo = function() {
+	
+	this.createLevelTwoMap();
+	
+	//function(sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+											//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles)
+	//TilePlatform(gameEngine, AM.getAsset("./img/ForestTiles.png"), 19, 406, 73, 406, 127, 406, 19, 460, 73, 460, 127, 460, 3000, 500, 50, 50, 20)
+
+	gameEngine.createLevelTwoMonsters();
+	
+	// // water
+	// this.createTile(AM.getAsset("./img/ForestTiles.png"), 372, 788, 50, 50, 0, 600, 230, 2);
 	
 	
 }

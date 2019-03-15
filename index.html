@@ -18,11 +18,10 @@
 <body>
   <nav>
   <div class = "brand" id = "title">
-    <h2>TCSS 491 Game Project</h2>
+    <h2>TCSS 491 Comptra</h2>
   </div>
   <ul>
     <li><a href = "index.html">Home</a></li>
-    <li><a href = "#">Game Instruction</a></li>
     <li><a href = "#gameWorld">Play Game</a></li>
     <li><a href = "#contact">Contact Us</a></li>
     <li><a href = "#container">Members</a></li>
@@ -34,9 +33,7 @@
     	<p>Take part as the main protagonist of our game and gun down enemies with all the cool power up items, but its also bring you that 90s nostalgia of some old game as : Metro, Contra...¯\_(ツ)_/¯</p>
     </div>
   </section>
-	<section class = "sec3">
-	    <canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px solid brown; background: black"></canvas>
-	</section>
+
   <section class = "sec2">
         <h2>Team Members</h2>
         <div class="d-flex flex-row" id = "container">
@@ -61,8 +58,7 @@
             <div class="col-lg-8 mx-auto text-center">
               <h2 class="section-heading">Let's Get In Touch!</h2>
               <hr class="my-4">
-              <p class="mb-5">Give us some feed back, how do you feel about our Insta Job, feel like
-                you can help the team to improve it more. Give us a call or email us.
+              <p class="mb-5">Give us some feed back about Comptra
               </p>
             </div>
           </div>
@@ -74,12 +70,22 @@
             <div class="col-lg-4 mr-auto text-center">
               <i class="fas fa-envelope fa-3x mb-3 sr-contact-2"></i>
               <p>
-                <a href="mailto:your-email@your-domain.com">feedback@InstaJob.com</a>
+                <a href="mailto:your-email@your-domain.com">feedback@bluethree.com</a>
               </p>
             </div>
           </div>
         </div>
       </section>
-
+      <section class = "sec3">
+    	    <canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px solid brown; background: black"></canvas>
+    	</section>
+      <script>
+      window.addEventListener("keydown", function(e) {
+          // space and arrow keys
+          if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+              e.preventDefault();
+          }
+      }, false);
+      </script>
 </body>
 </html>
