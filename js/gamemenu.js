@@ -177,7 +177,7 @@ GameShop.prototype.draw = function () {
 		// you can style here better
 		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 315, 500);
 		else if (this.hasPurchased)this.game.ctx.fillText("Purchased", 350, 500);
-		this.game.ctx.fillText("Press Enter to Select", 310, 650);
+		// this.game.ctx.fillText("Press Enter to Select", 310, 650);
 		
 		//  continue button
 		this.game.ctx.fillStyle = "#C0C0C0";
@@ -326,7 +326,10 @@ GameMenu.prototype.update = function () {
 
 GameMenu.prototype.draw = function() {
 	if ((!this.game.startGame || this.game.gameOver) && !this.game.showSetting && !this.game.showCredit) {
-		// this.resetPointerPos();
+		
+		this.ctx.fillStyle = "#C0C0C0";
+		roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
+										this.game.playButton.height, 5, true, true);
 		// start button
 		if (this.game.gameOver) {
 			
@@ -338,19 +341,13 @@ GameMenu.prototype.draw = function() {
 			this.ctx.shadowBlur = 0;
 			this.ctx.fillStyle = "white";
 			this.ctx.fillText("Game Over", 320, 250);
-			
 			this.ctx.lineWidth = 1;
-			this.ctx.fillStyle = "#C0C0C0";
-			roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
-										this.game.playButton.height, 5, true, true);
+			
 			this.ctx.fillStyle = "#FFFFFF";
 			this.ctx.font = "25px Verdana";
 			this.ctx.fillText("RESTART", 340, 325);
 		} else {
 			
-			this.ctx.fillStyle = "#C0C0C0";
-			roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
-										this.game.playButton.height, 5, true, true);
 			this.ctx.fillStyle = "#FFFFFF";
 			this.ctx.font = "25px Verdana";
 			this.ctx.fillText("START", 355, 325);
@@ -411,6 +408,9 @@ GameMenu.prototype.draw = function() {
 		this.ctx.fillText("Go Back", 360, 422);
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} 
+	
+	this.ctx.font = "20px Verdana";
+	this.game.ctx.fillText("Press Enter to Select", 290, 650);
 	// else if (this.game.gameOver) {
 		
 		// this.ctx.font = "30px Verdana";

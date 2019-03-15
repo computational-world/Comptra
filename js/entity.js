@@ -611,7 +611,7 @@ PowerUp.prototype.update = function () {
 				// alert(heroCheckPoint.specials);
 			}
 			this.game.checkPoint = true;
-			// this.removeFromWorld = true;
+			
 		}
 		
 	}
