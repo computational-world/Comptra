@@ -232,6 +232,7 @@ AM.queueDownload("./img/enemies.png");
 AM.queueDownload("./img/woods.png");
 AM.queueDownload("./img/Boss2.png");
 AM.queueDownload("./img/flag.png");
+AM.queueDownload("./img/orbs.png");
 AM.queueDownload("./img/bat.png");
 
 

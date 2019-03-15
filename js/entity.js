@@ -224,7 +224,6 @@ MovingPlatform.prototype.constructor = MovingPlatform;
 MovingPlatform.prototype.update = function () {
 			
 	this.boundingbox = new BoundingBox(this.x, this.y, this.width*this.numberOfTiles, this.height);
-	console.log(this.y);
 	// horizontal
 	if (this.horizontal) {
 		this.x += this.game.clockTick * this.speed * this.direction;
@@ -596,7 +595,7 @@ PowerUp.prototype.update = function () {
 			this.soundCheckpoint.play();
 			this.removeFromWorld = true;
 			if (!this.game.checkPoint) {
-				savaHeroData();
+				saveHeroData();
 				// heroCheckPoint.x = this.game.Hero.x;
 				// heroCheckPoint.y = this.game.Hero.y;
 				// heroCheckPoint.cameraX = Camera.x;
@@ -857,7 +856,7 @@ Aiming Turret
 function AimTurret(game, spritesheet, x, y, width, height, powerUp, powerUpType) {
 	//CustomAnimation(spriteSheet, startX, startY, offset, frameWidth, frameHeight, sheetWidth, frameDuration, frames, loop, scale) {
 		
-    this.animation = new CustomAnimation(spritesheet, 627, 211, 0, width, height, 1, 1.75, 1, false, 1);
+    this.animation = new CustomAnimation(spritesheet, 627, 211, 0, width, height, 1, 0.5, 1, false, 1);
 	this.animationShoot = new CustomAnimation(spritesheet, 627, 211, 0, width, height, 1, 1.75, 1, false, 1);
 	this.animationDie = new Animation(AM.getAsset("./img/explosion.png"), 128, 128, 4, 0.03, 16, false, 0.4);
     this.ctx = game.ctx;
@@ -919,7 +918,7 @@ AimTurret.prototype.update = function () {
 					this.animation.elapsedTime = 0;
 					this.shooting = false;
 					
-					var bullet = new AimCannonball(this.game, this.x - 7, this.y + 29, -1);
+					var bullet = new AimCannonball(this.game, this.x - 7, this.y + 29, -1, " 1 ");
 					this.game.addEntity(bullet);
 					this.game.bulletsBad.push(bullet);
 					
@@ -970,9 +969,94 @@ AimTurret.prototype.draw = function () {
 
 
 /*
+Orb
+*/
+function Orb(game, x, y, direction) {
+
+
+    this.animation = new CustomAnimation(AM.getAsset("./img/orbs.png"), 0, 128, 0, 32, 32, 4, 0.1, 4, true, 1);
+    this.animationExplosion = new CustomAnimation(AM.getAsset("./img/explosions.png"), 641, 367, 5, 15, 15, 6, .05, 6, false, 1);
+    this.speed = 250;
+    this.ctx = game.ctx;
+	this.game = game;
+    this.x = x;
+    this.y = y;
+	this.xVelocity = 0;
+	this.yVelocity = 0
+	this.calculateVelocity();
+	this.width = 12;
+	this.height = 12;
+	this.startX = x;
+	this.direction = direction;
+	this.hit = false;
+	this.sound = new Sound("audio/cannon.wav");
+	this.sound.play();
+	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+    Entity.call(this, game, this.x, this.y);
+}
+
+Orb.prototype = new Entity();
+Orb.prototype.constructor = Orb;
+
+Orb.prototype.calculateVelocity = function() {
+	// Tommy Edit
+	var x = this.game.Hero.x+20 - this.x;
+	var y = this.game.Hero.y+25 - this.y;
+	var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	this.xVelocity = x / distance;
+	this.yVelocity = y / distance;
+	
+}
+
+Orb.prototype.update = function () {
+	if (!this.hit) {
+		
+		// Tommy edit
+		this.x += this.xVelocity * this.game.clockTick * this.speed;
+		this.y += this.yVelocity * this.game.clockTick * this.speed;
+
+		
+		this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
+		
+		var distance = Math.abs(this.x - this.startX);
+		if (distance > 900) {
+			if (DEBUG) console.log("Cannonball removed.");	
+			for( var i = 0; i < this.game.bulletsBad.length; i++){ 
+				if ( this.game.bulletsBad[i] === this) {
+					this.game.bulletsBad.splice(i, 1); 
+					this.removeFromWorld = true;
+				}
+			}
+		}
+    }
+	
+    Entity.prototype.update.call(this);
+}
+
+Orb.prototype.draw = function () {
+	if (this.hit) {
+		this.animationExplosion.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+		if (this.animationExplosion.isDone()) {
+			for( var i = 0; i < this.game.bulletsBad.length; i++){ 
+				if ( this.game.bulletsBad[i] === this) {
+					this.game.bulletsBad.splice(i, 1);
+					this.removeFromWorld = true;
+				}
+			}	
+		}
+		
+	}
+    else this.animation.drawFrame(this.game.clockTick, this.ctx, this.x - Camera.x, this.y);
+    Entity.prototype.draw.call(this);
+}
+	
+	
+/*
 Aim/Smart Cannonball
 */
 function AimCannonball(game, x, y, direction) {
+
+
     this.animation = new CustomAnimation(AM.getAsset("./img/robots.png"), 162, 187, 0, 6, 6, 1, 1, 1, true, 2);
     this.animationExplosion = new CustomAnimation(AM.getAsset("./img/explosions.png"), 641, 367, 5, 15, 15, 6, .05, 6, false, 1);
     this.speed = 250;
@@ -988,6 +1072,8 @@ function AimCannonball(game, x, y, direction) {
 	this.startX = x;
 	this.direction = direction;
 	this.hit = false;
+	this.sound = new Sound("audio/cannon.wav");
+	this.sound.play();
 	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
     Entity.call(this, game, this.x, this.y);
 }
@@ -996,7 +1082,14 @@ AimCannonball.prototype = new Entity();
 AimCannonball.prototype.constructor = AimCannonball;
 
 AimCannonball.prototype.calculateVelocity = function() {
-	var x = Math.abs(this.game.Hero.x - this.x);
+	// Tommy Edit
+	var x = this.game.Hero.x+20 - this.x+6;
+	var y = this.game.Hero.y+25 - this.y+6;
+	var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+	this.xVelocity = x / distance;
+	this.yVelocity = y / distance;
+	
+	/*var x = Math.abs(this.game.Hero.x - this.x);
 	var y = Math.abs(this.game.Hero.y - this.y);
 	var distance = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
 	
@@ -1023,12 +1116,17 @@ AimCannonball.prototype.calculateVelocity = function() {
 		this.xVelocity = (this.x - this.game.Hero.x) / distance; 
 		this.leftShoot = true;
 	}
-	
+	*/
 	
 }
 
 AimCannonball.prototype.update = function () {
 	if (!this.hit) {
+		
+		// Tommy edit
+		this.x += this.xVelocity * this.game.clockTick * this.speed;
+		this.y += this.yVelocity * this.game.clockTick * this.speed;
+		/*
 		if (this.leftDownDiagonalShoot) {
 			this.x -= this.xVelocity * this.game.clockTick * this.speed;
 			this.y += this.yVelocity * this.game.clockTick * this.speed;			
@@ -1046,7 +1144,7 @@ AimCannonball.prototype.update = function () {
 		} else if (this.rightShoot) {
 			this.x += this.xVelocity * this.game.clockTick * this.speed;
 		}
-		
+		*/
 		
 		this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
 		
@@ -1460,7 +1558,6 @@ Boss1.prototype.draw = function () {
     }
 }
 
-
 /*
 Boss2
 */
@@ -1487,6 +1584,7 @@ function Boss2(game, spritesheet, x, y, width, height, scale, powerUp, powerUpTy
 	this.moveLeft = false;
 	this.Down = false;
 	this.moveRight = false;
+	this.shootElapsedTime = 0;
     this.powerUp = powerUp;
     this.powerUpType = powerUpType;
 	this.soundDeath = new Sound("audio/death-enemy.wav");
@@ -1499,6 +1597,7 @@ Boss2.prototype = new Entity();
 Boss2.prototype.constructor = Boss2;
 
 Boss2.prototype.update = function () {
+	this.shootElapsedTime += this.game.clockTick;
     this.boundingbox = new BoundingBox(this.x, this.y+7, this.width, this.height);
 	
 	// alive
@@ -1508,6 +1607,13 @@ Boss2.prototype.update = function () {
 		}
 		
 		if (this.active) {
+			// shoot
+			if (this.shootElapsedTime > 1.35) {
+				var bullet = new Orb(this.game, this.x +this.width/2, this.y + this.height/2);
+				this.game.addEntity(bullet);
+				this.game.bulletsBad.push(bullet);
+				this.shootElapsedTime = 0;
+			}
 
 			// check for bullet
 			for (var i = 0; i < this.game.bullets.length; i++) {
@@ -2707,6 +2813,8 @@ function Cannonball(game, x, y, direction) {
 	this.startX = x;
 	this.direction = direction;
 	this.hit = false;
+	this.sound = new Sound("audio/cannon.wav");
+	this.sound.play();
 	this.boundingbox = new BoundingBox(this.x, this.y, this.width, this.height);
     Entity.call(this, game, this.x, this.y);
 }

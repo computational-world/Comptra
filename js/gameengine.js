@@ -440,6 +440,9 @@ GameEngine.prototype.createLevelTwoMap = function() {
 
 /** Load level 2*/
 GameEngine.prototype.loadLevelTwo = function() {
+	soundSong.stop();
+	soundSong = new Sound("audio/track_2.mp3");
+	soundSong.play();
 	
 	this.createLevelTwoMap();
 	
