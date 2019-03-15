@@ -29,6 +29,7 @@ var heroCheckPoint = {
 
 function Sound(src) {
     this.sound = document.createElement("audio");
+	
     this.sound.src = src;
     this.sound.setAttribute("preload", "auto");
     this.sound.setAttribute("controls", "none");
@@ -272,14 +273,15 @@ AM.downloadAll(function () {
 	var settingButton = new SettingButton(320, 340, 150, 30);
 	var creditButton = new CreditButton(320, 380, 150, 30);
 	var gobackButton = new GoBackButton(350, 400, 100, 30);
-	var playAgainButton = new PlayAgainButton(350, 300, 150, 35);
+	// var playAgainButton = new PlayAgainButton(350, 300, 150, 35);
+
 	var continueButton = new ContinueButton(335, 350, 150, 35);
 	
 	gameEngine.playButton = playButton;
 	gameEngine.settingButton = settingButton;
 	gameEngine.creditButton = creditButton;
 	gameEngine.gobackButton = gobackButton;
-	gameEngine.playAgainButton = playAgainButton;
+	// gameEngine.playAgainButton = playAgainButton;
 	gameEngine.continueButton = continueButton;
 	
 	
@@ -393,9 +395,8 @@ function startGame() {
 
 		gameEngine.loadLevelOne();
 	} else {
-			
-		// alert(gameEngine.powerups);
-		// alert(gameEngine.Hero.weapons);
+		
+		saveHeroData()
 		for (var i = 0; i < gameEngine.entities.length; i++) {
 			var entity = gameEngine.entities[i];
 			if (entity instanceof Soldier || 
@@ -426,6 +427,20 @@ function startGame() {
 
 }
 
+
+function saveHeroData() {
+	heroCheckPoint.x = gameEngine.Hero.x;
+	heroCheckPoint.y = gameEngine.Hero.y;
+	heroCheckPoint.cameraX = Camera.x;
+	heroCheckPoint.coins = gameEngine.coins;
+	heroCheckPoint.score = gameEngine.score;
+	heroCheckPoint.specials = Array.from(gameEngine.Hero.specials);
+	heroCheckPoint.airstrikes = gameEngine.Hero.airstrikes;
+	heroCheckPoint.grenades = gameEngine.Hero.grenades;
+	heroCheckPoint.weapons = Array.from(gameEngine.Hero.weapons);
+	heroCheckPoint.ammoDouble = gameEngine.Hero.ammoDouble;
+	heroCheckPoint.ammoThreeWay = gameEngine.Hero.ammoThreeWay;
+}
 
 function resetGame() {
 	// alert(gameEngine.shop + " "  + gameEngine.endLevel + " "  + gameEngine.gameOver);
@@ -491,39 +506,52 @@ function startInput() {
 		
 		var rect = gameEngine.ctx.canvas.getBoundingClientRect();
 		var pos = {x : event.clientX - rect.left, y : event.clientY - rect.top};
-		if (!gameEngine.startGame && !gameEngine.showSetting && !gameEngine.showCredit) {
-			if (gameEngine.playButton.isClick(pos)) {
+		if ((!gameEngine.startGame || gameEngine.gameOver) && !gameEngine.showSetting && !gameEngine.showCredit) {
+			if (gameEngine.playButton.isClick(pos) && !gameEngine.gameOver) {
 				startGame();
 				gameEngine.startGame = true;
 				gameEngine.showSetting = false;
 				gameEngine.showCredit = false;
-			} 
+			}  else if (gameEngine.playButton.isClick(pos) && gameEngine.gameOver) {
+				Camera.x = 0;
+				gameEngine.startGame = true;
+				resetGame();
+				gameEngine.gameOver = false;
+				startGame();
+			}
 		} 
 		
-		if (!gameEngine.startGame && !gameEngine.showCredit && gameEngine.settingButton.isClick(pos)) {
+		if ( !gameEngine.showCredit && gameEngine.settingButton.isClick(pos)) {
+				
 				gameEngine.showSetting = true;
+				gameMenu.pointerY = 280;
+				gameMenu.pointerX = 100;
+				gameMenu.basey = gameMenu.pointerY;
 		}
 		
 				
-		if (!gameEngine.startGame && gameEngine.creditButton.isClick(pos)) {
+		if ( gameEngine.creditButton.isClick(pos)) {
 			gameEngine.showCredit = true;
+			gameMenu.pointerY = 280;
+			gameMenu.pointerX = 100;
+			gameMenu.basey = gameMenu.pointerY;
 		}
 		
-		if (!gameEngine.startGame && gameEngine.gobackButton.isClick(pos)) {
+		if (gameEngine.gobackButton.isClick(pos)) {
 			gameEngine.showSetting = false;
 			gameEngine.startGame = false;
 			gameEngine.showCredit = false;
 			gameMenu.resetPointerPos();
 		}
 	
-		if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
-			// gameEngine.restartGame = true;
-			Camera.x = 0;
-			gameEngine.startGame = true;
-			resetGame();
-			gameEngine.gameOver = false;
-			startGame();
-		}
+		// if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
+			// // gameEngine.restartGame = true;
+			// Camera.x = 0;
+			// gameEngine.startGame = true;
+			// resetGame();
+			// gameEngine.gameOver = false;
+			// startGame();
+		// }
 		
 		if (gameEngine.shop && gameEngine.continueButton.isClick(pos)) {
 			gameShop.pointerY = gameShop.boundedTop;
@@ -559,7 +587,7 @@ function startInput() {
 					break;
 			}
 			
-		} else if (!gameEngine.startGame && !gameEngine.showSetting && !gameEngine.showCredit) {
+		} else if ((!gameEngine.startGame || gameEngine.gameOver) && !gameEngine.showSetting && !gameEngine.showCredit) {
 			// alert("hi");
 			switch(e.keyCode) {
 				// Down

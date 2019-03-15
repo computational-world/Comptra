@@ -596,17 +596,18 @@ PowerUp.prototype.update = function () {
 			this.soundCheckpoint.play();
 			this.removeFromWorld = true;
 			if (!this.game.checkPoint) {
-				heroCheckPoint.x = this.game.Hero.x;
-				heroCheckPoint.y = this.game.Hero.y;
-				heroCheckPoint.cameraX = Camera.x;
-				heroCheckPoint.coins = this.game.Hero.coins;
-				heroCheckPoint.score = this.game.Hero.score;
-				heroCheckPoint.specials = Array.from(this.game.Hero.specials);
-				heroCheckPoint.airstrikes = this.game.Hero.airstrikes;
-				heroCheckPoint.grenades = this.game.Hero.grenades;
-				heroCheckPoint.weapons = Array.from(this.game.Hero.weapons);
-				heroCheckPoint.ammoDouble = this.game.Hero.ammoDouble;
-				heroCheckPoint.ammoThreeWay = this.game.Hero.ammoThreeWay;
+				savaHeroData();
+				// heroCheckPoint.x = this.game.Hero.x;
+				// heroCheckPoint.y = this.game.Hero.y;
+				// heroCheckPoint.cameraX = Camera.x;
+				// heroCheckPoint.coins = this.game.Hero.coins;
+				// heroCheckPoint.score = this.game.Hero.score;
+				// heroCheckPoint.specials = Array.from(this.game.Hero.specials);
+				// heroCheckPoint.airstrikes = this.game.Hero.airstrikes;
+				// heroCheckPoint.grenades = this.game.Hero.grenades;
+				// heroCheckPoint.weapons = Array.from(this.game.Hero.weapons);
+				// heroCheckPoint.ammoDouble = this.game.Hero.ammoDouble;
+				// heroCheckPoint.ammoThreeWay = this.game.Hero.ammoThreeWay;
 				// alert(heroCheckPoint.specials);
 			}
 			this.game.checkPoint = true;
