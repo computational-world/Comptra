@@ -177,7 +177,7 @@ GameShop.prototype.draw = function () {
 		// you can style here better
 		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 315, 500);
 		else if (this.hasPurchased)this.game.ctx.fillText("Purchased", 350, 500);
-		this.game.ctx.fillText("Press Enter to Select", 310, 650);
+		// this.game.ctx.fillText("Press Enter to Select", 310, 650);
 		
 		//  continue button
 		this.game.ctx.fillStyle = "#C0C0C0";
