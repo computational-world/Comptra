@@ -7,18 +7,27 @@ function GameShop(game, spritesheet) {
 	this.animation =  new Animation(spritesheet, this.width, this.height, 1, 0.5, 1, true, 1.2);
 	this.pointerX = 20;
 	this.offset = 50;
-	this.item1 = new ShopItem(game, AM.getAsset("./img/PowerUp/grenade.png"), 410, 95, 35, 35, 0, 2, "Grenade");
-	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 410, 95, 35, 35, 50, 3, "Shield");
+	this.item1 = new ShopItem(game, AM.getAsset("./img/PowerUp/grenade.png"), 430, 95, 35, 35, 0, 1, "Grenade");
+	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 430, 95, 35, 35, 50, 2, "Shield");
+	this.item3 = new ShopItem(game, AM.getAsset("./img/PowerUp/jet.png"), 430, 95, 35, 35, 100, 4, "Airstrike");
+	this.item4 = new ShopItem(game, AM.getAsset("./img/bullet2.png"), 430, 95, 35, 35, 150, 3, "x2 Damage");
 	this.items = [];
 	this.addItemToShop();
 	this.pointerY = -25;
 	this.boundedTop = -25;
+	this.boundedBottom = this.boundedTop + 250;
 	this.basey = this.pointerY;
 	this.floatHeight = 10;
+	this.messageElapsedTime = 0;
+	this.purchasedElapsedTime = 0;
 	this.moveDown = false;
 	this.moveUp = false;
 	this.purchaseFail = false;
 	this.game = game;
+	this.hasPurchased = false;
+	this.soundPurchase = new Sound("audio/Shop/purchase.mp3");
+	this.soundMove = new Sound("audio/Shop/move.wav");
+	this.soundError = new Sound("audio/Shop/error.wav");
 }
 
 GameShop.prototype = new Entity();
@@ -27,32 +36,102 @@ GameShop.prototype.constructor = GameShop;
 GameShop.prototype.addItemToShop = function() {
 	this.items.push(this.item1);
 	this.items.push(this.item2);
+	this.items.push(this.item3);
+	this.items.push(this.item4);
+	this.items.push(gameEngine.continueButton);
 }
 
 GameShop.prototype.purchaseItem = function() {
-	this.hasAttemptPurchase = true;
+	
 	for (var i = 0; i < this.items.length; i++) {
 		var item = this.items[i];
 		if (item.offset + this.boundedTop === this.basey) {
 			if (item.type === "Shield" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
 				this.game.Hero.shield = 3;
 				this.game.Hero.coins -= item.price;
+				this.hasPurchased = true;
+			} else if (item.type === "Grenade" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
+				if (this.hasSpecial("grenade")) this.game.Hero.grenades++;
+				else {
+					this.game.Hero.specials.push("grenade");
+					this.game.Hero.grenades++;
+				}
+				this.game.Hero.coins -= item.price;
+				this.hasPurchased = true;
+			} else if (item.type === "Airstrike" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
+				if (this.hasSpecial("airstrike")) this.game.Hero.airstrikes++;
+				else {
+					this.game.Hero.specials.push("airstrike");
+					this.game.Hero.airstrikes++;
+				}
+				this.game.Hero.coins -= item.price;
+				this.hasPurchased = true;
+			} else if (item.type === "x2 Damage" && this.game.Hero.coins >= item.price) {
+				if (this.game.Hero.weapons.length === 1) {
+					this.game.Hero.weapons.push("double");
+					this.game.Hero.ammoDouble += 10; 
+					this.game.Hero.weaponsIndex++;
+				} 
+				// increment ammo
+				else {
+					for (var i = 0; i < this.game.Hero.weapons.length; i++) {
+						if (this.game.Hero.weapons[i] === "double") {
+							this.game.Hero.ammoDouble += 10; 
+							break;
+						}
+						if (i === this.game.Hero.weapons.length-1) {
+							this.game.Hero.weapons.push("double");
+						}
+					}
+				}
+				this.game.Hero.coins -= item.price;
+				this.hasPurchased = true;
 			} else if (this.game.Hero.coins < item.price) {
+				this.soundError.play();
 				this.purchaseFail = true;
-			}
+			} 
 			break;
+		} else if (item instanceof ContinueButton && this.basey === 225) {
+			this.pointerY = this.boundedTop;
+			this.basey = this.pointerY;			
+			nextLevel();
 		}
 	}
+
 	
 }
 
+GameShop.prototype.hasSpecial = function(type) {
+	for (var i = 0; i < this.game.Hero.specials.length; i++) {
+		if (this.game.Hero.specials[i] === type) return true;
+	}
+	return false;
+}
 
 GameShop.prototype.update = function () {
 	// if (this.purchaseFail) this.purchaseFail = false;
+	if (this.purchaseFail) this.messageElapsedTime += this.game.clockTick;
+	if (this.hasPurchased) this.purchasedElapsedTime += this.game.clockTick;
+	if (this.messageElapsedTime > 2) {
+		this.purchaseFail = false;
+		this.messageElapsedTime = 0;
+	}
+	if (this.purchasedElapsedTime > 2) {
+		this.hasPurchased = false;
+		this.purchasedElapsedTime = 0;
+	}
 	if (this.moveDown) {
-		this.pointerY = this.basey + this.offset;
-		this.basey = this.pointerY;
+		if (this.basey + this.offset <= this.boundedBottom) {
+			this.pointerY = this.basey + this.offset;
+			this.basey = this.pointerY;
+			
+		}
 		this.moveDown = false;
+		// alert(this.basey);
+		this.soundMove.play();
 		
 	} else if (this.moveUp) {
 		var newY = this.basey - this.offset;
@@ -62,6 +141,7 @@ GameShop.prototype.update = function () {
 			this.basey = this.pointerY;
 		}
 		this.moveUp = false;
+		this.soundMove.play();
 	}
 	var duration = this.animation.elapsedTime + this.game.clockTick;
 	if (duration > this.animation.totalTime / 2) duration = this.animation.totalTime - duration;
@@ -73,10 +153,10 @@ GameShop.prototype.update = function () {
 
 GameShop.prototype.draw = function () {
 	if (this.game.shop) {
-		
+		// alert("I am here");
 		this.game.ctx.fillStyle = "#0a0a0a";
 		roundRect(this.game.ctx, 0, 0, 800, 800, 5, true, true);
-		this.game.ctx.fillStyle = "#6AE1F5";
+		this.game.ctx.fillStyle = "#C0C0C0";
 		this.game.ctx.font = "30px Verdana";
 		this.game.ctx.fillText("Game Shop", 320, 30);
 		
@@ -89,21 +169,23 @@ GameShop.prototype.draw = function () {
 		// item one - grenade
 		this.item1.draw();
 		this.item2.draw();
+		this.item3.draw();
+		this.item4.draw();
 	
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 		
 		// you can style here better
-		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 310, 450);
-		else if (this.hasAttemptPurchase)this.game.ctx.fillText("Purchased", 350, 450);
-		this.game.ctx.fillText("Press Enter to Purchase", 290, 500);
+		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 315, 500);
+		else if (this.hasPurchased)this.game.ctx.fillText("Purchased", 350, 500);
+		this.game.ctx.fillText("Press Enter to Select", 310, 650);
 		
 		//  continue button
-		this.game.ctx.fillStyle = "#6AE1F5";
+		this.game.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.game.ctx, this.game.continueButton.x, this.game.continueButton.y, this.game.continueButton.width, 
 									this.game.continueButton.height, 5, true, true);
-		this.game.ctx.fillStyle = "#DAFEFF";
+		this.game.ctx.fillStyle = "#ffffff";
 		this.game.ctx.font = "25px Verdana";
-		this.game.ctx.fillText("CONTINUE", 342, 600);
+		this.game.ctx.fillText("CONTINUE", 342, 375);
 		Entity.prototype.draw.call(this);
 	}
 }
@@ -133,57 +215,155 @@ ShopItem.prototype.draw = function() {
 
 
 /** Start Game Menu.*/
-function GameMenu(game) {
+function GameMenu(game, spritesheet) {
+	this.width = spritesheet.width;
+	this.height = spritesheet.height;
+	this.pointerY = 175;
+	this.basey = 175;
+	this.boundedTop = 175;
+	this.bounded
+	this.pointerX = 50;
+	this.floatHeight = 10;
+	this.offset = 40;
+	this.animation =  new Animation(spritesheet, this.width, this.height, 1, 0.5, 1, true, 1.2);
+	this.buttons = [];
+	this.addButtons();
+	this.boundedBottom = this.boundedTop + 80;
 	this.game = game;
+	this.moveDown = false;
+	this.moveUp = false;
+	this.soundMove = new Sound("audio/Shop/move.wav");
 	this.ctx = this.game.ctx;
 }
 GameMenu.prototype = new Entity();
 GameMenu.prototype.constructor = GameMenu;
 
+GameMenu.prototype.resetPointerPos = function() {
+	this.pointerY = 175;
+	this.basey = this.pointerY;
+	this.boundedTop = 175;
+	this.boundedBottom = this.boundedTop + 80;
+}
+
+GameMenu.prototype.addButtons = function() {
+	this.buttons.push(gameEngine.playButton);
+	this.buttons.push(gameEngine.settingButton);
+	this.buttons.push(gameEngine.creditButton);
+	this.buttons.push(gameEngine.gobackButton);
+}
+
+GameMenu.prototype.select = function() {
+	for (var i = 0; i < this.buttons.length; i++) {
+		var button = this.buttons[i];
+		if (button.offset + this.boundedTop === this.basey) {
+			if (button instanceof PlayButton) {
+				startGame();
+				gameEngine.startGame = true;
+				gameEngine.showSetting = false;
+				gameEngine.showCredit = false;
+
+				break;
+			} else if (button instanceof SettingButton) {
+				gameEngine.showSetting = true;
+				this.pointerY = 280;
+				this.pointerX = 100;
+				this.basey = this.pointerY;
+				break;
+			} else {
+				
+				this.pointerY = 280;
+				this.pointerX = 100;
+				this.basey = this.pointerY;
+				gameEngine.showCredit = true;
+				break;
+			}
+		} else if (this.basey === 280 && button instanceof GoBackButton) {
+			if (gameEngine.showSetting) gameEngine.showSetting = false;
+			else if (gameEngine.showCredit) gameEngine.showCredit = false;
+			this.resetPointerPos();
+			break;
+		}
+	}
+}
+GameMenu.prototype.update = function () {
+	
+	if (this.moveDown) {
+		if (this.basey + this.offset <= this.boundedBottom) {
+			this.pointerY = this.basey + this.offset;
+			
+			this.basey = this.pointerY;
+			
+		}
+		this.moveDown = false;
+		this.soundMove.play();
+	} else if (this.moveUp) {
+		var newY = this.basey - this.offset;
+		if (newY >= this.boundedTop) {
+			this.pointerY = newY;
+			this.basey = this.pointerY;
+		}
+		this.moveUp = false;
+		this.soundMove.play();
+	}
+	var duration = this.animation.elapsedTime + this.game.clockTick;
+	if (duration > this.animation.totalTime / 2) duration = this.animation.totalTime - duration;
+	duration = duration / this.animation.totalTime;
+	var height = (4 * duration - 4 * duration * duration) * this.floatHeight;
+	this.pointerY = this.basey - height;
+    Entity.prototype.update.call(this);
+}
+
 GameMenu.prototype.draw = function() {
 	if (!this.game.startGame & !this.game.showSetting && !this.game.showCredit) {
+		// this.resetPointerPos();
 		// start button
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
 									this.game.playButton.height, 5, true, true);
-		this.ctx.fillStyle = "#DAFEFF";
+		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.font = "25px Verdana";
 		this.ctx.fillText("START", 355, 325);
 		
 		// setting button
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, this.game.settingButton.x, this.game.settingButton.y, this.game.settingButton.width, 
 									this.game.settingButton.height, 5, true, true);
-		this.ctx.fillStyle = "#DAFEFF";
+		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.font = "25px Verdana";
 		this.ctx.fillText("CONTROLS", 325, 365);
 		
 		// credits button
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, this.game.creditButton.x, this.game.creditButton.y, this.game.creditButton.width, 
 									this.game.creditButton.height, 5, true, true);
-		this.ctx.fillStyle = "#DAFEFF";
+		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.font = "25px Verdana";
 		this.ctx.fillText("CREDITS", 340, 405);
+		
+		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} else if (this.game.showSetting) {
-		this.ctx.fillStyle = "#6AE1F5";
-		roundRect(this.ctx, 220, 200, 350, 250, 5, true, true);
-		this.ctx.fillStyle = "#0a0a0a";
+		this.ctx.fillStyle = "#C0C0C0";
+		roundRect(this.ctx, 220, 200, 350, 250, 10, true, true);
+		this.ctx.fillStyle = "#000000";
 		this.ctx.font = "15px Verdana";
-		this.ctx.fillText("Left Arrow: Move Left", 290, 230);
-		this.ctx.fillText("Right Arrow: Move Right", 290, 260);
-		this.ctx.fillText("Up Arrow: Aim Gun Upward", 290, 290);
-		this.ctx.fillText("Down Arrow: Aim Gun Downward", 290, 320);
-		this.ctx.fillText("X: Jump", 290, 350);
-		this.ctx.fillText("C: Shoot", 290, 380);
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillText("Left Arrow + Right Arrow: Move", 290, 230);
+		this.ctx.fillText("Up Arrow: Aim Gun Upward", 290, 260);
+		this.ctx.fillText("Down Arrow: Aim Gun Downward", 290, 290);
+		this.ctx.fillText("X: Jump", 290, 320);
+		this.ctx.fillText("C: Shoot", 290, 350);
+		this.ctx.fillText("Z: Use Special", 290, 380);
+		// S: swap weapon
+		// D: swap special
+		
+		this.ctx.fillStyle = "#000000";
 		roundRect(this.ctx, this.game.gobackButton.x, this.game.gobackButton.y, this.game.gobackButton.width, 
 									this.game.gobackButton.height, 5, true, true);
 		this.ctx.font = "20px Verdana";
-		this.ctx.fillStyle = "#DAFEFF";
+		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.fillText("Go Back", 360, 422);
+		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} else if (this.game.showCredit) {
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, 220, 200, 350, 250, 5, true, true);
 		this.ctx.fillStyle = "#0a0a0a";
 		this.ctx.font = "15px Verdana";
@@ -191,12 +371,13 @@ GameMenu.prototype.draw = function() {
 		this.ctx.fillText("Vecheka: Developer", 310, 280);
 		this.ctx.fillText("Huy: Developer", 310, 330);
 	
-		this.ctx.fillStyle = "#6AE1F5";
+		this.ctx.fillStyle = "#000000";
 		roundRect(this.ctx, this.game.gobackButton.x, this.game.gobackButton.y, this.game.gobackButton.width, 
 									this.game.gobackButton.height, 5, true, true);
 		this.ctx.font = "20px Verdana";
-		this.ctx.fillStyle = "#DAFEFF";
+		this.ctx.fillStyle = "#FFFFFF";
 		this.ctx.fillText("Go Back", 360, 422);
+		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} else if (this.game.gameOver) {
 		
 		this.ctx.font = "30px Verdana";
@@ -227,11 +408,12 @@ function PlayButton(x, y, width, height) {
 	this.y = y;
 	this.width = width;
 	this.height = height;
+	this.offset = 0;
 	this.boundingbox = new BoundingBox(x, y, width, height);
 }
 
 PlayButton.prototype.isClick = function(pos) {
-    return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
+    return pos.x > this.x && pos.x < this.x + this.width && pos.y < this.y+this.height && pos.y > this.y;
 }
 
 
@@ -241,6 +423,7 @@ function SettingButton(x, y, width, height) {
 	this.y = y;
 	this.width = width;
 	this.height = height;
+	this.offset = 40;
 	this.boundingbox = new BoundingBox(x, y, width, height);
 }
 
@@ -254,6 +437,7 @@ function CreditButton(x, y, width, height) {
 	this.y = y;
 	this.width = width;
 	this.height = height;
+	this.offset = 80;
 	this.boundingbox = new BoundingBox(x, y, width, height);
 }
 
@@ -298,7 +482,8 @@ function ContinueButton(x, y, width, height) {
 }
 
 ContinueButton.prototype.isClick = function(pos) {
-    return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
+    
+	return pos.x > this.x && pos.x < this.x+this.width && pos.y < this.y+this.height && pos.y > this.y;
 }
 
 // draw rounding corner rectangle.. Source: https://stackoverflow.com/questions/1255512/how-to-draw-a-rounded-rectangle-on-html-canvas

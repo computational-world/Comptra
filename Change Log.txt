@@ -1,3 +1,51 @@
+TO DO:
+	- after loading check point and going to level 2, level 1 platforms exist
+	
+	- if checkpoint not reached, still spawn first half of monsters
+	- after reaching checkpoint, save current score and coins, power-ups.  When loading checkpoint, restore these values. 
+
+3/13/19
+	Features:
+		- Added checkpoint power-up
+		- Changed main weapon system.  Upgraded weapons will have limited ammo.
+		- Added "loot" drops which are randomized.  If full health, heart will not drop.
+
+3/12/19
+	Features:
+		- Added ability for boss to drop exit anywhere chosen
+		- Finished level 2
+		- Added Boss 2
+		- Added boss health bars
+	
+3/11/19
+	Features:
+		- Added sounds for shop: move, purchase, error
+		- Added song switching between levels
+		- Added shop theme song
+		- Added sound for game over
+		- Added Camera variable:max, to set the lock position of each level
+		- Added cheat codes for testing purposes (warp, kill on-screen)
+		
+		Bug Fixes:
+		- Fixed UI text to be clearly visible on all levels
+		
+3/10/19
+	Features:
+		- Added extra life power-up
+		- Added sound for jet, grenade power-up, and airstrike power-up
+		
+3/9/19
+	Features:
+		- Added Airstrike power-up
+		- Added Double-Damage weapon
+		- Added 3-way weapon
+		- Added weapon swap functionality
+
+3/8/19
+	Features:
+		- Added Grenade special
+		- Added special swap functionality
+
 2/24/19
 	Features:
 		- Changed damage system.  Enemies colliding with the player no longer get destroyed, but hit the player instead.

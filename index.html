@@ -1,10 +1,12 @@
-﻿
+
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>Game Project Shell</title>
-	
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    <link href="style.css" rel="stylesheet" type="text/css">
 	<!-- <script type="text/javascript" src="http://24.16.255.56:8888/socket.io/socket.io.js"></script> -->
     <script type="text/javascript" src="./js/assetmanager.js"></script>
 	<!-- <script type="text/javascript" src="./js/database.js"></script> -->
@@ -14,6 +16,76 @@
     <script type="text/javascript" src="./js/main.js"></script>
 </head>
 <body>
-    <canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px solid brown; background: lightskyblue"></canvas>
+  <nav>
+  <div class = "brand" id = "title">
+    <h2>TCSS 491 Comptra</h2>
+  </div>
+  <ul>
+    <li><a href = "index.html">Home</a></li>
+    <li><a href = "#gameWorld">Play Game</a></li>
+    <li><a href = "#contact">Contact Us</a></li>
+    <li><a href = "#container">Members</a></li>
+  </ul>
+  </nav>
+  <section class = "sec1">
+    <div class="text">
+    	<h1>Welcome To Our Game</h1>
+    	<p>Take part as the main protagonist of our game and gun down enemies with all the cool power up items, but its also bring you that 90s nostalgia of some old game as : Metro, Contra...¯\_(ツ)_/¯</p>
+    </div>
+  </section>
+
+  <section class = "sec2">
+        <h2>Team Members</h2>
+        <div class="d-flex flex-row" id = "container">
+          <br>
+          <div class="p-2">
+            <i class="fas fa-user-tie"></i>
+            <h3>Tommy Pham</h3>
+          </div>
+          <div class="p-2">
+            <i class="fas fa-user-tie"></i>
+            <h3>Vecheka Chhroun</h3>
+          </div>
+        <div class="p-2">
+          <i class="fas fa-user-tie"></i>
+          <h3>Huy Tran</h3>
+        </div>
+      </div>
+    </section>
+   <section id="contact">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+              <h2 class="section-heading">Let's Get In Touch!</h2>
+              <hr class="my-4">
+              <p class="mb-5">Give us some feed back about Comptra
+              </p>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-lg-4 ml-auto text-center">
+              <i class="fas fa-phone fa-3x mb-3 sr-contact-1"></i>
+              <p>123-456-6789</p>
+            </div>
+            <div class="col-lg-4 mr-auto text-center">
+              <i class="fas fa-envelope fa-3x mb-3 sr-contact-2"></i>
+              <p>
+                <a href="mailto:your-email@your-domain.com">feedback@bluethree.com</a>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class = "sec3">
+    	    <canvas id="gameWorld" tabindex="1" width="800" height="700" style="border: 1px solid brown; background: black"></canvas>
+    	</section>
+      <script>
+      window.addEventListener("keydown", function(e) {
+          // space and arrow keys
+          if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+              e.preventDefault();
+          }
+      }, false);
+      </script>
 </body>
 </html>
