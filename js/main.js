@@ -44,9 +44,13 @@ function Sound(src) {
     }
 }
 
-var soundSong = new Sound("audio/track_1.wav");
-soundSong.sound.volume = 0.5;
-soundSong.sound.loop = true;
+var levelSong = {
+	"level1": "audio/track_1.wav",
+	"level2": "audio/track_2.mp3",
+};
+
+var soundSong;
+
 
 var soundShopTheme = new Sound("audio/Shop/theme.mp3");
 soundShopTheme.sound.volume = 0.4;
@@ -388,7 +392,7 @@ function startGame() {
 	if (gameEngine.level === 1) Camera.max = 7400;
 	else if (gameEngine.level === 2) {
 		Camera.max = 10750;
-		soundSong.play();
+		// soundSong.play();
 	}
 	
 	Camera.lock = false;
@@ -433,8 +437,8 @@ function saveHeroData() {
 	heroCheckPoint.x = gameEngine.Hero.x;
 	heroCheckPoint.y = gameEngine.Hero.y;
 	heroCheckPoint.cameraX = Camera.x;
-	heroCheckPoint.coins = gameEngine.coins;
-	heroCheckPoint.score = gameEngine.score;
+	heroCheckPoint.coins = gameEngine.Hero.coins;
+	heroCheckPoint.score = gameEngine.Hero.score;
 	heroCheckPoint.specials = Array.from(gameEngine.Hero.specials);
 	heroCheckPoint.airstrikes = gameEngine.Hero.airstrikes;
 	heroCheckPoint.grenades = gameEngine.Hero.grenades;

@@ -262,8 +262,12 @@ GameEngine.prototype.addMonsters = function(monster) {
 
 /** Load level 1*/
 GameEngine.prototype.loadLevelOne = function() {
+	if (soundSong) soundSong.stop();
+	soundSong = new Sound(levelSong.level1);
+	soundSong.sound.volume = 0.5;
+	soundSong.sound.loop = true;
+	soundSong.play();
 	gameEngine.createLevelOneMap();
-	
 	// Monsters
 	gameEngine.createLevelOneMonsters();
 	gameEngine.addEntity(gameEngine.Hero);
@@ -441,7 +445,9 @@ GameEngine.prototype.createLevelTwoMap = function() {
 /** Load level 2*/
 GameEngine.prototype.loadLevelTwo = function() {
 	soundSong.stop();
-	soundSong = new Sound("audio/track_2.mp3");
+	soundSong = new Sound(levelSong.level2);
+	soundSong.sound.volume = 0.5;
+	soundSong.sound.loop = true;
 	soundSong.play();
 	
 	this.createLevelTwoMap();
