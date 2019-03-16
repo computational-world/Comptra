@@ -11,11 +11,12 @@ function GameShop(game, spritesheet) {
 	this.item2 = new ShopItem(game, AM.getAsset("./img/PowerUp/shield.png"), 430, 95, 35, 35, 50, 2, "Shield");
 	this.item3 = new ShopItem(game, AM.getAsset("./img/PowerUp/jet.png"), 430, 95, 35, 35, 100, 4, "Airstrike");
 	this.item4 = new ShopItem(game, AM.getAsset("./img/bullet2.png"), 430, 95, 35, 35, 150, 3, "x2 Damage");
+	this.item5 = new ShopItem(game, AM.getAsset("./img/PowerUp/three-way.png"), 430, 95, 35, 35, 200, 3, "Three Way");
 	this.items = [];
 	this.addItemToShop();
 	this.pointerY = -25;
 	this.boundedTop = -25;
-	this.boundedBottom = this.boundedTop + 250;
+	this.boundedBottom = this.boundedTop + 300;
 	this.basey = this.pointerY;
 	this.floatHeight = 10;
 	this.messageElapsedTime = 0;
@@ -38,6 +39,7 @@ GameShop.prototype.addItemToShop = function() {
 	this.items.push(this.item2);
 	this.items.push(this.item3);
 	this.items.push(this.item4);
+	this.items.push(this.item5);
 	this.items.push(gameEngine.continueButton);
 }
 
@@ -70,6 +72,7 @@ GameShop.prototype.purchaseItem = function() {
 				this.game.Hero.coins -= item.price;
 				this.hasPurchased = true;
 			} else if (item.type === "x2 Damage" && this.game.Hero.coins >= item.price) {
+				this.soundPurchase.play();
 				if (this.game.Hero.weapons.length === 1) {
 					this.game.Hero.weapons.push("double");
 					this.game.Hero.ammoDouble += 10; 
@@ -89,12 +92,34 @@ GameShop.prototype.purchaseItem = function() {
 				}
 				this.game.Hero.coins -= item.price;
 				this.hasPurchased = true;
+			} else if (item.type === "Three Way" && this.game.Hero.coins >= item.price) {
+				// no upgraded weapons
+				this.soundPurchase.play();
+				if (this.game.Hero.weapons.length === 1) {
+					this.game.Hero.weapons.push("three-way");
+					this.game.Hero.ammoThreeWay += 10; 
+					this.game.Hero.weaponsIndex++;
+				} 
+				// increment ammo
+				else {
+					for (var i = 0; i < this.game.Hero.weapons.length; i ++) {
+						if (this.game.Hero.weapons[i] === "three-way") {
+							this.game.Hero.ammoThreeWay += 10; 
+							break;
+						}
+						if (i === this.game.Hero.weapons.length-1) {
+							this.game.Hero.weapons.push("three-way");
+						}
+					}
+				}
+				this.game.Hero.coins -= item.price;
+				this.hasPurchased = true;
 			} else if (this.game.Hero.coins < item.price) {
 				this.soundError.play();
 				this.purchaseFail = true;
 			} 
 			break;
-		} else if (item instanceof ContinueButton && this.basey === 225) {
+		} else if (item instanceof ContinueButton && this.basey === this.boundedBottom) {
 			this.pointerY = this.boundedTop;
 			this.basey = this.pointerY;			
 			nextLevel();
@@ -171,12 +196,13 @@ GameShop.prototype.draw = function () {
 		this.item2.draw();
 		this.item3.draw();
 		this.item4.draw();
+		this.item5.draw();
 	
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 		
 		// you can style here better
 		if (this.purchaseFail) this.game.ctx.fillText("Not Enough Coins", 315, 500);
-		else if (this.hasPurchased)this.game.ctx.fillText("Purchased", 350, 500);
+		else if (this.hasPurchased) this.game.ctx.fillText("Purchased", 350, 500);
 		// this.game.ctx.fillText("Press Enter to Select", 310, 650);
 		
 		//  continue button
@@ -185,7 +211,7 @@ GameShop.prototype.draw = function () {
 									this.game.continueButton.height, 5, true, true);
 		this.game.ctx.fillStyle = "#ffffff";
 		this.game.ctx.font = "25px Verdana";
-		this.game.ctx.fillText("CONTINUE", 342, 375);
+		this.game.ctx.fillText("CONTINUE", 342, 415);
 		Entity.prototype.draw.call(this);
 	}
 }
@@ -205,11 +231,13 @@ function ShopItem(game, spritesheet, x, y, frameX, frameY, offset, price, type) 
 
 ShopItem.prototype.draw = function() {
 	this.game.ctx.font = "20px Verdana";
-	this.game.ctx.fillText(this.type, 300, 120 + this.offset);
+	this.game.ctx.fillText(this.type, 250, 120 + this.offset);
 	this.game.ctx.drawImage(this.spritesheet, this.x, this.y, this.frameX, this.frameY);
-	// this.game.ctx.drawImage(AM.getAsset("./img/PowerUp/grenade.png"), 410, 95, 35, 35);
-	this.game.ctx.drawImage(AM.getAsset("./img/PowerUp/coinIcon.png"), 490, 95 + this.offset, 35, 35);
-	this.game.ctx.fillText(this.price, 550, 125 + this.offset);
+	
+	if (this.type === "x2 Damage") this.game.ctx.fillText("x10", 390, 120 + this.offset);
+	this.game.ctx.drawImage(AM.getAsset("./img/PowerUp/coinIcon.png"), 510, 95 + this.offset, 35, 35);
+	
+	this.game.ctx.fillText(this.price, 570, 125 + this.offset);
 	
 }
 
@@ -411,26 +439,7 @@ GameMenu.prototype.draw = function() {
 	
 	this.ctx.font = "20px Verdana";
 	this.game.ctx.fillText("Press Enter to Select", 290, 650);
-	// else if (this.game.gameOver) {
-		
-		// this.ctx.font = "30px Verdana";
-		// this.ctx.shadowColor = "black";
-		// this.ctx.shadowBlur = 7;
-		// this.ctx.lineWidth = 5;
-		// this.ctx.strokeText("Game Over", 340, 250);
-		// this.ctx.shadowBlur = 0;
-		// this.ctx.fillStyle = "white";
-		// this.ctx.fillText("Game Over", 340, 250);
-		
-		// this.ctx.lineWidth = 1;
-		// this.ctx.fillStyle = "#6AE1F5";
-		// roundRect(this.ctx, this.game.playAgainButton.x, this.game.playAgainButton.y, this.game.playAgainButton.width, 
-									// this.game.playAgainButton.height, 5, true, true);
-	
-		// this.ctx.fillStyle = "#DAFEFF";
-		// this.ctx.font = "25px Verdana";
-		// this.ctx.fillText("Play Again", 360, 325);	
-	// }
+
 }
 
 

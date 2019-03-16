@@ -280,7 +280,7 @@ AM.downloadAll(function () {
 	var gobackButton = new GoBackButton(350, 400, 100, 30);
 	// var playAgainButton = new PlayAgainButton(350, 300, 150, 35);
 
-	var continueButton = new ContinueButton(335, 350, 150, 35);
+	var continueButton = new ContinueButton(335, 390, 150, 35);
 	
 	gameEngine.playButton = playButton;
 	gameEngine.settingButton = settingButton;
@@ -324,7 +324,10 @@ function loadCheckPoint() {
 	if (!gameEngine.checkPoint) {
 			gameEngine.monsters.splice(0, gameEngine.monsters.length);
 			gameEngine.platforms.splice(0, gameEngine.platforms.length);
+			gameEngine.movplatforms.splice(0, gameEngine.movplatforms.length);
 			gameEngine.powerups.splice(0, gameEngine.powerups.length);
+			gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
+			
 			Camera.x = heroCheckPoint.cameraX;
 			gameEngine.Hero = hero;
 			gameEngine.Hero.x = 200;
@@ -448,7 +451,7 @@ function saveHeroData() {
 }
 
 function resetGame() {
-	// alert(gameEngine.shop + " "  + gameEngine.endLevel + " "  + gameEngine.gameOver);
+	
 	if (!gameEngine.shop && !gameEngine.gameOver && !gameEngine.endLevel) {
 		gameEngine.Hero.reset();
 		Camera.x = 0;
@@ -466,7 +469,10 @@ function resetGame() {
 	
 	gameEngine.monsters.splice(0, gameEngine.monsters.length);
 	gameEngine.platforms.splice(0, gameEngine.platforms.length);
+	gameEngine.movplatforms.splice(0, gameEngine.movplatforms.length);
 	gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
+	gameEngine.powerups.splice(0, gameEngine.powerups.length);
+	
 			
 	
 	for (var i = 0; i < gameEngine.entities.length; i++) {
