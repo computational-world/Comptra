@@ -17,7 +17,7 @@ var heroCheckPoint = {
 	coins: 0,
 	score: 0,
 	specials: [],
-	weapons: [],
+	weapons: ["basic"],
 	ammoDouble: 0,
 	ammoThreeWay: 0,
 	airstrikes: 0,
@@ -327,7 +327,7 @@ function loadCheckPoint() {
 			gameEngine.movplatforms.splice(0, gameEngine.movplatforms.length);
 			gameEngine.powerups.splice(0, gameEngine.powerups.length);
 			gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
-			
+			// alert(heroCheckPoint.weapons);
 			Camera.x = heroCheckPoint.cameraX;
 			gameEngine.Hero = hero;
 			gameEngine.Hero.x = 200;
