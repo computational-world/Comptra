@@ -306,7 +306,7 @@ GameMenu.prototype.select = function() {
 				break;
 			} else if (button instanceof SettingButton) {
 				gameEngine.showSetting = true;
-				this.pointerY = 280;
+				this.pointerY = 310;
 				this.pointerX = 100;
 				this.basey = this.pointerY;
 				break;
@@ -318,7 +318,7 @@ GameMenu.prototype.select = function() {
 				gameEngine.showCredit = true;
 				break;
 			}
-		} else if (this.basey === 280 && button instanceof GoBackButton) {
+		} else if ((this.basey === 280 || this.basey === 310) && button instanceof GoBackButton) {
 			if (gameEngine.showSetting) gameEngine.showSetting = false;
 			else if (gameEngine.showCredit) gameEngine.showCredit = false;
 			this.resetPointerPos();
