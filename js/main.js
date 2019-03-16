@@ -777,16 +777,16 @@ function startInput() {
 				
                 break;
 				
-			// ".", cheat code: kill on-screen
-			case 190:
+			// "7", cheat code: kill on-screen
+			case 55:
 				for (var i = 0; i < gameEngine.monsters.length; i++) {
 					var monster = gameEngine.monsters[i];
 					if (monster.x >= Camera.x && monster.x <= Camera.x + 800) monster.hitPoints -= 100;
 				}
 				break;
 
-			// "," cheat code: warp
-			case 188:
+			// "6" cheat code: warp
+			case 54:
 				if (gameEngine.level === 1) {
 					gameEngine.Hero.x = 6700;
 					gameEngine.Hero.y = 100;
