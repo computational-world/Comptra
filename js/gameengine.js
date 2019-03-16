@@ -236,24 +236,7 @@ GameEngine.prototype.loadLevelOneCheckPoint = function() {
 }
 
 
-/** Load Level One Check Point.*/
-GameEngine.prototype.loadLevelTwoCheckPoint = function() {
-	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "loot");
-	this.addMonsters(monster);
-	
-	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 8625, 150, 47, 30, false, "");
-	this.addMonsters(monster);
-	
-	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 9025, 150, 47, 30, false, "");
-	this.addMonsters(monster);
-	
-	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 9050, 350-81, 140, 108, true, "coin");
-	this.addMonsters(monster);
-	
-	// Boss 2
-	var Boss = new Boss2(gameEngine, AM.getAsset("./img/Boss2.png"), 10670, 370, 87, 110, 2, true, "exit");
-	this.addMonsters(Boss);
-}
+
 /** Add monsters to the world.*/
 GameEngine.prototype.addMonsters = function(monster) {
 	this.addEntity(monster);
@@ -338,6 +321,26 @@ GameEngine.prototype.createLevelTwoMonsters = function() {
 	var Boss = new Boss2(gameEngine, AM.getAsset("./img/Boss2.png"), 10670, 370, 87, 110, 2, true, "exit");
 	this.addMonsters(Boss);
 }
+
+/** Load Level Two Check Point.*/
+GameEngine.prototype.loadLevelTwoCheckPoint = function() {
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 8050, 150, 50, 50, true, "loot");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 8625, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 9025, 150, 47, 30, false, "");
+	this.addMonsters(monster);
+	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 9050, 350-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+	
+	// Boss 2
+	var Boss = new Boss2(gameEngine, AM.getAsset("./img/Boss2.png"), 10670, 370, 87, 110, 2, true, "exit");
+	this.addMonsters(Boss);
+}
+
 
 GameEngine.prototype.createLevelTwoMap = function() {
 	// background 
@@ -461,6 +464,25 @@ GameEngine.prototype.loadLevelTwo = function() {
 	// // water
 	// this.createTile(AM.getAsset("./img/ForestTiles.png"), 372, 788, 50, 50, 0, 600, 230, 2);
 	
+	
+}
+
+GameEngine.prototype.createLevelThreeMap = function() {
+	
+}
+
+GameEngine.prototype.createLevelThreeMonsters = function() {
+	
+}
+
+/** Load level 3 */
+GameEngine.prototype.loadLevelThree = function() {
+	// this.createLevelThreeMap();
+	// this.createLevelThreeMonsters();
+	
+}
+
+GameEngine.prototype.loadLevelThreeCheckPoint = function() {
 	
 }
 
