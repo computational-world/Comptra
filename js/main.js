@@ -615,16 +615,22 @@ function startInput() {
 				// Down
 				case 40:
 					gameShop.moveDown = true;
-
 					break;
 				case 38: // up
 					gameShop.moveUp = true;
 					break;
 				case 13: // purchase item
-					
 					gameShop.purchaseItem();
-					
-						
+					break;
+
+					// Up (W)
+				case 87:
+					gameShop.moveUp = true;
+					break;
+				
+				// Down (S)
+				case 83:
+					gameShop.moveDown = true;
 					break;
 			}
 			
@@ -639,10 +645,17 @@ function startInput() {
 					gameMenu.moveUp = true;
 					break;
 				case 13: // purchase item
+					gameMenu.select();						
+					break;
 					
-					gameMenu.select();
-					
-						
+				// Up (W)
+				case 87:
+					gameMenu.moveUp = true;
+					break;
+				
+				// Down (S)
+				case 83:
+					gameMenu.moveDown = true;
 					break;
 			}
 		} else if (gameEngine.showSetting || gameEngine.showCredit) {
