@@ -580,14 +580,27 @@ PowerUp.prototype.update = function () {
 			this.soundExit.play();
 			this.removeFromWorld = true;
 			this.game.level++;
-			resetHeroCheckPoint();
-			this.game.Hero.visible = false;
-			this.game.shop = true;
-			this.game.checkPoint = false;
-			this.game.endLevel = true;
-			soundSong.stop();
-			soundShopTheme.play();
-			resetGame();
+			if (this.game.level > 2) {  // game won code
+				this.game.gameWon = true;
+				this.game.shop = false;
+				this.game.Hero.visible = false;
+				this.game.checkPoint = false;
+				this.game.level = 1;
+				if (soundSong) soundSong.stop();
+				resetHeroCheckPoint();
+				resetGame();
+				
+			} else {
+				resetHeroCheckPoint();
+				this.game.Hero.visible = false;
+				this.game.shop = true;
+				this.game.checkPoint = false;
+				this.game.endLevel = true;
+				soundSong.stop();
+				soundShopTheme.play();
+				resetGame();
+				
+			}
 			
 		}
 		else if (this.type === "checkpoint") {
