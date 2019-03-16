@@ -380,9 +380,11 @@ GameMenu.prototype.draw = function() {
 			this.ctx.shadowColor = "black";
 			this.ctx.shadowBlur = 7;
 			this.ctx.lineWidth = 5;
+			this.ctx.strokeText("Congratulations!", 280, 210);
 			this.ctx.strokeText("You are a beast!", 280, 250);
 			this.ctx.shadowBlur = 0;
 			this.ctx.fillStyle = "white";
+			this.ctx.fillText("Congratulations!", 280, 210);
 			this.ctx.fillText("You are a beast!", 280, 250);
 			this.ctx.lineWidth = 1;
 			
@@ -415,33 +417,38 @@ GameMenu.prototype.draw = function() {
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} else if (this.game.showSetting) {
 		this.ctx.fillStyle = "#C0C0C0";
-		roundRect(this.ctx, 220, 200, 350, 250, 10, true, true);
+		roundRect(this.ctx, 220, 200, 350, 280, 10, true, true);
 		this.ctx.fillStyle = "#000000";
 		this.ctx.font = "15px Verdana";
-		this.ctx.fillText("Left Arrow + Right Arrow: Move", 290, 230);
-		this.ctx.fillText("Up Arrow: Aim Gun Upward", 290, 260);
-		this.ctx.fillText("Down Arrow: Aim Gun Downward", 290, 290);
-		this.ctx.fillText("X: Jump", 290, 320);
-		this.ctx.fillText("C: Shoot", 290, 350);
-		this.ctx.fillText("Z: Use Special", 290, 380);
+		this.ctx.fillText("A + D: Move", 290, 230);
+		this.ctx.fillText("W + S: Aim Gun Upward/Downward", 290, 260);
+		this.ctx.fillText("K: Jump", 290, 290);
+		this.ctx.fillText("J: Shoot", 290, 320);
+		this.ctx.fillText("F: Use Special", 290, 350);
+		this.ctx.fillText("Q: Swap Weapon", 290, 380);
+		this.ctx.fillText("E: Swap Special", 290, 410);
 		// S: swap weapon
 		// D: swap special
 		
 		this.ctx.fillStyle = "#000000";
-		roundRect(this.ctx, this.game.gobackButton.x, this.game.gobackButton.y, this.game.gobackButton.width, 
+		roundRect(this.ctx, this.game.gobackButton.x, 430, this.game.gobackButton.width, 
 									this.game.gobackButton.height, 5, true, true);
 		this.ctx.font = "20px Verdana";
 		this.ctx.fillStyle = "#FFFFFF";
-		this.ctx.fillText("Go Back", 360, 422);
+		this.ctx.fillText("Go Back", 360, 452);
 		this.animation.drawFrame(this.game.clockTick, this.game.ctx, this.pointerX, this.pointerY);
 	} else if (this.game.showCredit) {
 		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, 220, 200, 350, 250, 5, true, true);
 		this.ctx.fillStyle = "#0a0a0a";
 		this.ctx.font = "15px Verdana";
-		this.ctx.fillText("Tommy: Developer", 310, 230);
-		this.ctx.fillText("Vecheka: Developer", 310, 280);
-		this.ctx.fillText("Huy: Developer", 310, 330);
+		this.ctx.fillText("Blue Three:", 310, 230);
+		this.ctx.fillText("Developer: Tommy Pham", 310, 250);
+		this.ctx.fillText("Developer: Vechecka Chhourn", 310, 270);
+		this.ctx.fillText("Developer: Minh-Huy Tran", 310, 290);
+		this.ctx.fillText("Thanks to: ", 310, 340);
+		this.ctx.fillText("Chris Marriott Ph.D.", 310, 360);
+		this.ctx.fillText("Master484 for lots of art ", 310, 380);
 	
 		this.ctx.fillStyle = "#000000";
 		roundRect(this.ctx, this.game.gobackButton.x, this.game.gobackButton.y, this.game.gobackButton.width, 
