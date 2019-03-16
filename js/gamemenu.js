@@ -288,16 +288,18 @@ GameMenu.prototype.select = function() {
 		// alert(i);
 		if (button.offset + this.boundedTop === this.basey) {
 			if (button instanceof PlayButton) {
-				if (gameEngine.gameOver) {
+				if (gameEngine.gameOver || gameEngine.gameWon) {
 					Camera.x = 0;
 					gameEngine.startGame = true;
 					resetGame();
 					gameEngine.gameOver = false;
+					gameEngine.gameWon = false;
 					startGame();
 				} else {
 					
 					startGame();
 					gameEngine.startGame = true;
+					
 					gameEngine.showSetting = false;
 					gameEngine.showCredit = false;
 				}
@@ -329,7 +331,6 @@ GameMenu.prototype.update = function () {
 	if (this.moveDown) {
 		if (this.basey + this.offset <= this.boundedBottom) {
 			this.pointerY = this.basey + this.offset;
-			
 			this.basey = this.pointerY;
 			
 		}
@@ -353,7 +354,7 @@ GameMenu.prototype.update = function () {
 }
 
 GameMenu.prototype.draw = function() {
-	if ((!this.game.startGame || this.game.gameOver) && !this.game.showSetting && !this.game.showCredit) {
+	if ((!this.game.startGame || this.game.gameOver || this.game.gameWon) && !this.game.showSetting && !this.game.showCredit) {
 		
 		this.ctx.fillStyle = "#C0C0C0";
 		roundRect(this.ctx, this.game.playButton.x, this.game.playButton.y, this.game.playButton.width, 
@@ -369,6 +370,20 @@ GameMenu.prototype.draw = function() {
 			this.ctx.shadowBlur = 0;
 			this.ctx.fillStyle = "white";
 			this.ctx.fillText("Game Over", 320, 250);
+			this.ctx.lineWidth = 1;
+			
+			this.ctx.fillStyle = "#FFFFFF";
+			this.ctx.font = "25px Verdana";
+			this.ctx.fillText("RESTART", 340, 325);
+		} else if (this.game.gameWon) {
+			this.ctx.font = "30px Verdana";
+			this.ctx.shadowColor = "black";
+			this.ctx.shadowBlur = 7;
+			this.ctx.lineWidth = 5;
+			this.ctx.strokeText("You are a beast!", 280, 250);
+			this.ctx.shadowBlur = 0;
+			this.ctx.fillStyle = "white";
+			this.ctx.fillText("You are a beast!", 280, 250);
 			this.ctx.lineWidth = 1;
 			
 			this.ctx.fillStyle = "#FFFFFF";

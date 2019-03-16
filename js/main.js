@@ -271,6 +271,7 @@ AM.downloadAll(function () {
 	gameEngine.shop = false;
 	gameEngine.done = false;
 	gameEngine.endLevel = false;
+	gameEngine.gameWon = false;
 	
 	gameEngine.level = 1;
 	
@@ -484,10 +485,10 @@ function saveHeroData() {
 
 function resetGame() {
 	
-	if (!gameEngine.shop && !gameEngine.gameOver && !gameEngine.endLevel) {
+	if (!gameEngine.shop && !gameEngine.gameOver && !gameEngine.endLevel && !gameEngine.gameWon) {
 		gameEngine.Hero.reset();
 		Camera.x = 0;
-	} else if (gameEngine.gameOver) {
+	} else if (gameEngine.gameOver || gameEngine.gameWon) {
 		gameEngine.createHero();
 		
 	} else if (gameEngine.endLevel) {
@@ -549,7 +550,7 @@ function startInput() {
 		
 		var rect = gameEngine.ctx.canvas.getBoundingClientRect();
 		var pos = {x : event.clientX - rect.left, y : event.clientY - rect.top};
-		if ((!gameEngine.startGame || gameEngine.gameOver) && !gameEngine.showSetting && !gameEngine.showCredit) {
+		if ((!gameEngine.startGame || gameEngine.gameOver || gameEngine.gameWon) && !gameEngine.showSetting && !gameEngine.showCredit) {
 			if (gameEngine.playButton.isClick(pos) && !gameEngine.gameOver) {
 				startGame();
 				gameEngine.startGame = true;
@@ -564,7 +565,7 @@ function startInput() {
 			}
 		} 
 		
-		if ( !gameEngine.showCredit && gameEngine.settingButton.isClick(pos)) {
+		if (!gameEngine.showCredit && gameEngine.settingButton.isClick(pos)) {
 				
 				gameEngine.showSetting = true;
 				gameMenu.pointerY = 280;
@@ -573,7 +574,7 @@ function startInput() {
 		}
 		
 				
-		if ( gameEngine.creditButton.isClick(pos)) {
+		if (gameEngine.creditButton.isClick(pos)) {
 			gameEngine.showCredit = true;
 			gameMenu.pointerY = 280;
 			gameMenu.pointerX = 100;
@@ -587,14 +588,6 @@ function startInput() {
 			gameMenu.resetPointerPos();
 		}
 	
-		// if (gameEngine.gameOver && gameEngine.playAgainButton.isClick(pos)) {
-			// // gameEngine.restartGame = true;
-			// Camera.x = 0;
-			// gameEngine.startGame = true;
-			// resetGame();
-			// gameEngine.gameOver = false;
-			// startGame();
-		// }
 		
 		if (gameEngine.shop && gameEngine.continueButton.isClick(pos)) {
 			gameShop.pointerY = gameShop.boundedTop;
@@ -630,7 +623,7 @@ function startInput() {
 					break;
 			}
 			
-		} else if ((!gameEngine.startGame || gameEngine.gameOver) && !gameEngine.showSetting && !gameEngine.showCredit) {
+		} else if ((!gameEngine.startGame || gameEngine.gameOver || gameEngine.gameWon) && !gameEngine.showSetting && !gameEngine.showCredit) {
 			// alert("hi");
 			switch(e.keyCode) {
 				// Down
