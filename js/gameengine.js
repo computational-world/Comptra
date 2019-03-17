@@ -171,7 +171,7 @@ GameEngine.prototype.createLevelOneMonsters = function() {
 	
 	// Power Ups
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/grenade.png"), 1050, 500 - (0.07 * 512), 512, 512, .07, "grenade");
-	gameEngine.createPowerUp(AM.getAsset("./img/hero.png"), 3350, 200 - (0.75 * 50), 50, 50, .75, "1up");
+	//gameEngine.createPowerUp(AM.getAsset("./img/hero.png"), 3350, 200 - (0.75 * 50), 50, 50, .75, "1up");
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/jet.png"), 500, 500 - (0.08 * 333), 825, 333, .08, "airstrike");
 	//gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/coin.png"), 3350, 200 - (0.07 * 496), 494, 496, 0.07, "coin");
 	gameEngine.createPowerUp(AM.getAsset("./img/PowerUp/shield.png"), 2875, 500 - (0.15 * 256), 256, 256, 0.15, "shield");
@@ -468,22 +468,280 @@ GameEngine.prototype.loadLevelTwo = function() {
 }
 
 GameEngine.prototype.createLevelThreeMap = function() {
+	//Tile(game, spritesheet, sourceX, sourceY, width, height, x, y, numberOfXRepeats, numberOfYRepeats) {
+	// Background 
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 380, 373, 50, 50, 0, 0, 250, 14);
+	
+	// top border
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 75, 481, 50, 50, 0, 0, 250, 1);
+	
+	
+	// Vent (434, 373)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 373, 50, 50, 200, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 373, 50, 50, 2600, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 373, 50, 50, 5000, 150, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 373, 50, 50, 9300, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 373, 50, 50, 10900, 250, 1, 1);
+	
+	// green dots (488, 427)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 488, 427, 50, 50, 700, 150, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 488, 427, 50, 50, 4300, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 488, 427, 50, 50, 7000, 300, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 488, 427, 50, 50, 8500, 250, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 488, 427, 50, 50, 11600, 250, 1, 1);
+	
+	// double green dots (434, 427)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 427, 50, 50, 3000, 350, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 427, 50, 50, 4550, 500, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 427, 50, 50, 8900, 400, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 434, 427, 50, 50, 10400, 200, 1, 1);
+	
+	// red dots (542, 427)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 1300, 350, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 2100, 400, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 5400, 400, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 7400, 500, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 10000, 250, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 427, 50, 50, 12000, 250, 1, 1);
+		
+	// double red dots (596, 427)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 596, 427, 50, 50, 3400, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 596, 427, 50, 50, 4100, 500, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 596, 427, 50, 50, 5750, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 596, 427, 50, 50, 8100, 400, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 596, 427, 50, 50, 11200, 400, 1, 1);
+	
+	// green bars (542, 373)
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 373, 50, 50, 1700, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 373, 50, 50, 3900, 200, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 373, 50, 50, 6350, 100, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 373, 50, 50, 7700, 150, 1, 1);
+	this.createTile(AM.getAsset("./img/LabTiles.png"), 542, 373, 50, 50, 9650, 300, 1, 1);
+	
+	//(game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+		//sourceXLeft, sourceYLeft, sourceXMid, sourceYMid, sourceXRight, sourceYRight, x, y, width, height, numberOfTiles) {
+	//this.createTilePlatform(21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 0, 550, 50, 50, 20);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 0, 350, 50, 50, 8);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 0, 450, 50, 50, 12);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 0, 550, 50, 50, 20);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 1100, 550, 50, 50, 15);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 1950, 550, 50, 50, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 2150, 550, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 2300, 550, 50, 50, 12);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	//Platform((game, spritesheet, sourceXTopLeft, sourceYTopLeft, sourceXTopMid, sourceYTopMid, sourceXTopRight, sourceYTopRight,
+     //x, y, width, height, numberOfTiles, numberOfTilesY)
+	 pf = new Platform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 3000, 450, 50, 50, 4, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new Platform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 3300, 350, 50, 50, 4, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new Platform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 3700, 350, 50, 50, 30, 2);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 3550, 600, 50, 50, 38);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, false, -1, 8, 5550, 600, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 5850, 200, 50, 50, 20);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, true, 1, 6, 6900, 200, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, false, -1, 6, 7500, 600, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, true, 1, 6, 7800, 600, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, true, -1, 6, 8700, 600, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 8950, 600, 50, 50, 20);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 10050, 550, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 10200, 450, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 10350, 350, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 10500, 250, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 75, 206, 75, 206, 129, 206, 75, 260, 75, 260, 129, 260, 10650, 150, 50, 50, 1);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	
+	pf = new MovingPlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, true, 1, 6, 10750, 150, 50, 50, 4);
+	this.addEntity(pf);
+	this.platforms.push(pf);
+	this.movplatforms.push(pf);
+	
+	pf = new TilePlatform(gameEngine, AM.getAsset("./img/LabTiles.png"), 21, 206, 75, 206, 129, 206, 21, 260, 75, 260, 129, 260, 11350, 500, 50, 50, 20);
+	this.addEntity(pf);
+	this.platforms.push(pf);
 	
 }
 
 GameEngine.prototype.createLevelThreeMonsters = function() {
+	// monsters
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 950, 500, 47, 30, false, "");
+	this.addMonsters(monster);	
 	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 1750, 550-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 2150, 500, 47, 30, true, "grenade");
+	this.addMonsters(monster);	
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 2750, 500, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 2850, 500, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 3300, 300, 47, 30, true, "loot");
+	this.addMonsters(monster);	
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 4200, 300, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 4250, 300, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 4400, 300, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 4800, 300, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 4850, 300, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 5000, 300, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 4400, 550, 500, 50, true, "coin");
+	this.addMonsters(monster);
+	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 4450, 600-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 5000, 600-81, 140, 108, true, "coin");
+	this.addMonsters(monster);
+
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 5400, 550, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	gameEngine.createPowerUp(AM.getAsset("./img/flag.png"), 5875, 200 - (0.016 * 2491), 1601, 2491, 0.016, "checkpoint");
+	
+	// AFTER CHECKPOINT
+	
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 6750, 200-81, 140, 108, true, "loot");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 9600, 550, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 9650, 550, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 9900, 550, 500, 50, true, "coin");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 10350, 300, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 10650, 100, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	var Boss = new Boss3(gameEngine, AM.getAsset("./img/Boss3.png"), 12080, 370, 87, 110, 1.2, true, "exit");
+	this.addMonsters(Boss);
 }
 
 /** Load level 3 */
 GameEngine.prototype.loadLevelThree = function() {
-	// this.createLevelThreeMap();
-	// this.createLevelThreeMonsters();
+	if (soundSong) soundSong.stop();
+	soundSong = new Sound(levelSong.level3);
+	soundSong.sound.volume = 0.7;
+	soundSong.sound.loop = true;
+	soundSong.play();
+	
+	this.createLevelThreeMap();
+	this.createLevelThreeMonsters();
 	
 }
 
 GameEngine.prototype.loadLevelThreeCheckPoint = function() {
+	monster = new Mech(gameEngine, AM.getAsset("./img/mechs.png"), 6750, 200-81, 140, 108, true, "loot");
+	this.addMonsters(monster);
 	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 9600, 550, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new FlyingRobot(gameEngine, AM.getAsset("./img/robots.png"), 9650, 550, 50, 50, false, "none");
+	this.addMonsters(monster);
+	
+	monster = new Turret(gameEngine, AM.getAsset("./img/robots.png"), 9900, 550, 500, 50, true, "coin");
+	this.addMonsters(monster);
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 10350, 300, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	monster = new AimTurret(gameEngine, AM.getAsset("./img/enemies.png"), 10650, 100, 47, 30, false, "");
+	this.addMonsters(monster);	
+	
+	var Boss = new Boss3(gameEngine, AM.getAsset("./img/Boss3.png"), 12080, 370, 87, 110, 1.2, true, "exit");
+	this.addMonsters(Boss);
 }
 
 function Timer() {

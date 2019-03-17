@@ -1,8 +1,6 @@
-TO DO:
-	- after loading check point and going to level 2, level 1 platforms exist
-	
-	- if checkpoint not reached, still spawn first half of monsters
-	- after reaching checkpoint, save current score and coins, power-ups.  When loading checkpoint, restore these values. 
+3/14/19 - 3/16/19
+	Features:
+		- Added lots of features but forgot to update log.  This includes entirity of level 3.
 
 3/13/19
 	Features:

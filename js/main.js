@@ -47,6 +47,8 @@ function Sound(src) {
 var levelSong = {
 	"level1": "audio/track_1.wav",
 	"level2": "audio/track_2.mp3",
+	"level3": "audio/track_3.mp3",
+	"win": "audio/WinGame.mp3",
 };
 
 var soundSong;
@@ -235,8 +237,10 @@ AM.queueDownload("./img/L2Background.png");
 AM.queueDownload("./img/enemies.png");
 AM.queueDownload("./img/woods.png");
 AM.queueDownload("./img/Boss2.png");
+AM.queueDownload("./img/Boss3.png");
 AM.queueDownload("./img/flag.png");
 AM.queueDownload("./img/orbs.png");
+AM.queueDownload("./img/LabTiles.png");
 AM.queueDownload("./img/bat.png");
 
 
@@ -322,12 +326,14 @@ function loadCheckPoint() {
 		gameEngine.entities[i].removeFromWorld = true;
 	}
 	
+	gameEngine.monsters.splice(0, gameEngine.monsters.length);
+	gameEngine.platforms.splice(0, gameEngine.platforms.length);
+	gameEngine.movplatforms.splice(0, gameEngine.movplatforms.length);
+	gameEngine.powerups.splice(0, gameEngine.powerups.length);
+	gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
+	
 	if (!gameEngine.checkPoint) {
-			gameEngine.monsters.splice(0, gameEngine.monsters.length);
-			gameEngine.platforms.splice(0, gameEngine.platforms.length);
-			gameEngine.movplatforms.splice(0, gameEngine.movplatforms.length);
-			gameEngine.powerups.splice(0, gameEngine.powerups.length);
-			gameEngine.bulletsBad.splice(0, gameEngine.bulletsBad.length);
+
 			// alert(heroCheckPoint.weapons);
 			Camera.x = heroCheckPoint.cameraX;
 			gameEngine.Hero = hero;
@@ -354,8 +360,8 @@ function loadCheckPoint() {
 			gameEngine.loadLevelTwo();
 			gameEngine.addEntity(gameEngine.Hero);
 		} else if (gameEngine.level === 3) { // uncomment this
-			// gameEngine.loadLevelThree();
-			// gameEngine.addEntity(gameEngine.Hero);
+			 gameEngine.loadLevelThree();
+			 gameEngine.addEntity(gameEngine.Hero);
 		}
 	} else {
 			hero.x = heroCheckPoint.x;
@@ -382,8 +388,8 @@ function loadCheckPoint() {
 			gameEngine.createLevelTwoMap();
 			gameEngine.loadLevelTwoCheckPoint();
 		} else if (gameEngine.level === 3) { // uncomment this
-			// gameEngine.createLevelThreeMap();
-			// gameEngine.loadLevelThreeCheckPoint();
+			 gameEngine.createLevelThreeMap();
+			 gameEngine.loadLevelThreeCheckPoint();
 		}
 		
 		gameEngine.Hero = hero;
@@ -399,10 +405,9 @@ function loadCheckPoint() {
 function startGame() {
 	// set Camera max for lock
 	if (gameEngine.level === 1) Camera.max = 7400;
-	else if (gameEngine.level === 2) {
-		Camera.max = 10750;
-		// soundSong.play();
-	}
+	else if (gameEngine.level === 2) Camera.max = 10750;
+	else if (gameEngine.level === 3) Camera.max = 12150;
+	
 	
 	Camera.lock = false;
 	if (gameEngine.level === 1) {
@@ -437,32 +442,32 @@ function startGame() {
 			gameEngine.addEntity(gameEngine.Hero);
 		} else gameEngine.addEntity(gameEngine.Hero);
 	} else if (gameEngine.level === 3) { // uncomment the codes when you are done implementing
-		// saveHeroData()
-		// for (var i = 0; i < gameEngine.entities.length; i++) {
-			// var entity = gameEngine.entities[i];
-			// if (entity instanceof Soldier || 
-				// entity instanceof GameMenu ||
-				// entity instanceof GameShop) {
-					// continue;
-			// }
-			// gameEngine.entities.splice(i, 1);
-		// }
+		saveHeroData()
+		for (var i = 0; i < gameEngine.entities.length; i++) {
+			var entity = gameEngine.entities[i];
+			if (entity instanceof Soldier || 
+				entity instanceof GameMenu ||
+				entity instanceof GameShop) {
+					continue;
+			}
+			gameEngine.entities.splice(i, 1);
+		}
 			
-		// gameEngine.loadLevelThree();
-		// var hero;
-		// var hasHero = false;
-		// for (var i = 0; i < gameEngine.entities.length; i++) {
-			// var entity = gameEngine.entities[i];
-			// if (entity instanceof Soldier) {
-				// hero = gameEngine.entities.splice(i, 1)[0];
-				// hasHero = true;
-				// break;
-			// }
-		// }
-		// if (hasHero) {
-			// gameEngine.Hero = hero;
-			// gameEngine.addEntity(gameEngine.Hero);
-		// } else gameEngine.addEntity(gameEngine.Hero);
+		gameEngine.loadLevelThree();
+		var hero;
+		var hasHero = false;
+		for (var i = 0; i < gameEngine.entities.length; i++) {
+			var entity = gameEngine.entities[i];
+			if (entity instanceof Soldier) {
+				hero = gameEngine.entities.splice(i, 1)[0];
+				hasHero = true;
+				break;
+			}
+		}
+		if (hasHero) {
+			gameEngine.Hero = hero;
+			gameEngine.addEntity(gameEngine.Hero);
+		} else gameEngine.addEntity(gameEngine.Hero);
 	}
 	
 
@@ -610,16 +615,22 @@ function startInput() {
 				// Down
 				case 40:
 					gameShop.moveDown = true;
-
 					break;
 				case 38: // up
 					gameShop.moveUp = true;
 					break;
 				case 13: // purchase item
-					
 					gameShop.purchaseItem();
-					
-						
+					break;
+
+					// Up (W)
+				case 87:
+					gameShop.moveUp = true;
+					break;
+				
+				// Down (S)
+				case 83:
+					gameShop.moveDown = true;
 					break;
 			}
 			
@@ -634,10 +645,17 @@ function startInput() {
 					gameMenu.moveUp = true;
 					break;
 				case 13: // purchase item
+					gameMenu.select();						
+					break;
 					
-					gameMenu.select();
-					
-						
+				// Up (W)
+				case 87:
+					gameMenu.moveUp = true;
+					break;
+				
+				// Down (S)
+				case 83:
+					gameMenu.moveDown = true;
 					break;
 			}
 		} else if (gameEngine.showSetting || gameEngine.showCredit) {
@@ -655,40 +673,40 @@ function startInput() {
 			    gameEngine.Hero.space = true;
 			    break;
                        
-            // Left
-            case 37:
+            // Left (A)
+            case 65:
                 gameEngine.Hero.moving = true;
                 gameEngine.Hero.direction = -1;          
 				break;
              
-            // Up
-            case 38:
+            // Up (W)
+            case 87:
                 gameEngine.Hero.up = true;
 				break;
              
-            // Right
-            case 39:
+            // Right (D)
+            case 68:
                 gameEngine.Hero.moving = true;
                 gameEngine.Hero.direction = 1;
                 break;
 				
-			// Down
-            case 40:
+			// Down (S)
+            case 83:
                 gameEngine.Hero.down = true;
                 break;
 				
-			// X
-            case 88:
+			// Jump (K)
+            case 75:
                 gameEngine.Hero.jump = true;
                 break;
 				
-			// C
-            case 67:
+			// Shoot (J)
+            case 74:
                 gameEngine.Hero.shoot = true;
                 break;
 				
-			// Z
-            case 90:
+			// Special (F)
+            case 70:
                 gameEngine.Hero.special = true;
                 break;
 			// case 83: // S
@@ -711,42 +729,42 @@ function startInput() {
 		        break;
 
 			// left
-			case 37:
+			case 65:
 			    gameEngine.Hero.moving = false;
 			    break;
 			
 			// right
-			case 39:
+			case 68:
 			    gameEngine.Hero.moving = false;
 			    break;
 			
 			//up
-			case 38:
+			case 87:
 			    gameEngine.Hero.up = false;
 			    break;
 				
 			//down
-			case 40:
+			case 83:
 			    gameEngine.Hero.down = false;
 			    break;
 				
-			// X
-            case 88:
+			// Jump (K)
+            case 75:
                 gameEngine.Hero.jump = false;
                 break;
 				
-			// C
-            case 67:
+			// Shoot (J)
+            case 74:
                 gameEngine.Hero.shoot = false;
                 break;
 				
-			// Z
-            case 90:
+			// Special (F)
+            case 70:
                 gameEngine.Hero.special = false;
                 break;
 				
-			// A
-            case 65:
+			// Swap Special (E)
+            case 69:
 				if (gameEngine.Hero.specials.length > 0) {
 					if (gameEngine.Hero.specialsIndex + 2 > gameEngine.Hero.specials.length) {
 						gameEngine.Hero.currentSpecial = gameEngine.Hero.specials[0];
@@ -759,8 +777,8 @@ function startInput() {
 				}
                 break;
 				
-			// S
-            case 68:
+			// Swap Weapon (Q)
+            case 81:
 				if (gameEngine.Hero.weaponsIndex + 2 > gameEngine.Hero.weapons.length) {
 					gameEngine.Hero.weapon = gameEngine.Hero.weapons[0];
 					gameEngine.Hero.weaponsIndex = 0;
@@ -772,25 +790,28 @@ function startInput() {
 				
                 break;
 				
-			// Right shift, cheat code: kill on-screen
-			case 16:
+			// "7", cheat code: kill on-screen
+			case 55:
 				for (var i = 0; i < gameEngine.monsters.length; i++) {
 					var monster = gameEngine.monsters[i];
 					if (monster.x >= Camera.x && monster.x <= Camera.x + 800) monster.hitPoints -= 100;
 				}
 				break;
 
-			// "/" cheat code: warp
-			case 190:
+			// "6" cheat code: warp
+			case 54:
 				if (gameEngine.level === 1) {
-					gameEngine.Hero.x = 6500;
-					gameEngine.Hero.y = 200;
-					Camera.x = 6100;
+					gameEngine.Hero.x = 6700;
+					gameEngine.Hero.y = 100;
+					Camera.x = 6300;
 				} else if (gameEngine.level === 2) {
 					gameEngine.Hero.x = 10000;
 					gameEngine.Hero.y = 100;
-
 					Camera.x = 9600;
+				} else if (gameEngine.level === 3) {
+					gameEngine.Hero.x = 11500;
+					gameEngine.Hero.y = 100;
+					Camera.x = 11100;
 				}
 				gameEngine.Hero.falling = true;
 				
